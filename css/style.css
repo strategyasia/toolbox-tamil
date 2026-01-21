@@ -453,3 +453,166 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
+
+/* ============================================
+   Advertisement Banners
+   ============================================ */
+
+.ad-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: var(--spacing-lg) 0;
+    padding: 0 var(--spacing-sm);
+}
+
+.ad-banner {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.ad-banner:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Ad Placeholder (will be replaced with actual ads) */
+.ad-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: 2px dashed var(--border-color);
+}
+
+.ad-label {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+/* Top Leaderboard - 728x90 */
+.ad-top-leaderboard .ad-banner {
+    width: 728px;
+    height: 90px;
+    max-width: 100%;
+}
+
+/* After Hero - Large Leaderboard - 970x90 */
+.ad-after-hero .ad-banner {
+    width: 970px;
+    height: 90px;
+    max-width: 100%;
+}
+
+/* Mid Section - Medium Rectangle - 300x250 */
+.ad-mid-section {
+    margin: var(--spacing-xl) 0;
+}
+
+.ad-mid-section .ad-banner {
+    width: 300px;
+    height: 250px;
+}
+
+/* Before Footer - Leaderboard - 728x90 */
+.ad-before-footer .ad-banner {
+    width: 728px;
+    height: 90px;
+    max-width: 100%;
+}
+
+/* Sidebar Ad (for tool pages) - 160x600 or 300x600 */
+.ad-sidebar {
+    position: sticky;
+    top: 100px;
+    margin: var(--spacing-md) 0;
+}
+
+.ad-sidebar .ad-banner {
+    width: 160px;
+    height: 600px;
+}
+
+/* Large Sidebar Ad */
+.ad-sidebar-large .ad-banner {
+    width: 300px;
+    height: 600px;
+}
+
+/* Responsive Ad Styles */
+@media (max-width: 1024px) {
+    .ad-after-hero .ad-banner {
+        width: 728px;
+        height: 90px;
+    }
+
+    .ad-sidebar {
+        position: static;
+    }
+}
+
+@media (max-width: 768px) {
+    .ad-container {
+        margin: var(--spacing-md) 0;
+    }
+
+    /* Mobile - Show smaller ads */
+    .ad-top-leaderboard .ad-banner,
+    .ad-after-hero .ad-banner,
+    .ad-before-footer .ad-banner {
+        width: 320px;
+        height: 100px;
+    }
+
+    .ad-mid-section .ad-banner {
+        width: 300px;
+        height: 250px;
+    }
+
+    .ad-sidebar .ad-banner,
+    .ad-sidebar-large .ad-banner {
+        width: 300px;
+        height: 250px;
+    }
+}
+
+@media (max-width: 480px) {
+    .ad-top-leaderboard .ad-banner,
+    .ad-after-hero .ad-banner,
+    .ad-before-footer .ad-banner {
+        width: 100%;
+        max-width: 320px;
+        height: 100px;
+    }
+
+    .ad-mid-section .ad-banner {
+        width: 100%;
+        max-width: 300px;
+        height: 250px;
+    }
+}
+
+/* Google AdSense Compatibility */
+ins.adsbygoogle {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* Hide ad label when real ads are loaded */
+.ad-banner.ad-loaded .ad-placeholder {
+    display: none;
+}
