@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Setup - ToolBox Tamil</title>
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="login-page">
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <svg width="60" height="60" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="40" height="40" rx="8" fill="url(#gradient)"/>
+                    <path d="M12 20L18 26L28 14" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                    <defs>
+                        <linearGradient id="gradient" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#FF6B6B"/>
+                            <stop offset="1" stop-color="#FF8E53"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <h1>ToolBox Tamil</h1>
+                <p>Admin Dashboard Setup</p>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>🎉 Welcome!</strong><br>
+                Let's create your secure admin account.<br>
+                <small style="opacity: 0.8;">Choose a strong password - you'll need it to access the dashboard.</small>
+            </div>
+
+            <form id="setupForm" class="login-form">
+                <div class="form-group">
+                    <label for="username">Admin Username</label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        placeholder="Choose a username (min 3 characters)"
+                        required
+                        minlength="3"
+                        autocomplete="username"
+                    >
+                    <p class="form-help">This will be your login username</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Admin Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Choose a strong password (min 8 characters)"
+                        required
+                        minlength="8"
+                        autocomplete="new-password"
+                    >
+                    <p class="form-help">Use a mix of letters, numbers, and symbols</p>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input
+                        type="password"
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        placeholder="Re-enter your password"
+                        required
+                        minlength="8"
+                        autocomplete="new-password"
+                    >
+                </div>
+
+                <div class="password-strength" id="passwordStrength" style="display: none;">
+                    <div class="strength-meter">
+                        <div class="strength-fill" id="strengthFill"></div>
+                    </div>
+                    <p class="strength-text" id="strengthText">Password strength: Weak</p>
+                </div>
+
+                <div class="alert alert-error" id="errorMessage" style="display: none;"></div>
+
+                <button type="submit" class="btn btn-primary btn-block" id="setupBtn">
+                    <span class="btn-text">Create Admin Account</span>
+                    <span class="btn-loader" style="display: none;">
+                        <span class="spinner"></span> Setting up...
+                    </span>
+                </button>
+            </form>
+
+            <div class="security-tips" style="margin-top: 24px; padding: 16px; background: #F8F9FA; border-radius: 8px;">
+                <h4 style="margin-bottom: 12px; font-size: 14px;">🔒 Security Tips:</h4>
+                <ul style="font-size: 13px; line-height: 1.8; opacity: 0.8; padding-left: 20px;">
+                    <li>Use at least 8 characters</li>
+                    <li>Mix uppercase and lowercase letters</li>
+                    <li>Include numbers and special characters</li>
+                    <li>Don't use common words or patterns</li>
+                    <li>Keep your credentials safe and private</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="login-info">
+            <h3>🛡️ First-Time Setup</h3>
+            <p style="margin-bottom: 20px;">Create your admin credentials to access the dashboard.</p>
+            <ul>
+                <li>✅ Secure password hashing (SHA-256)</li>
+                <li>✅ No default credentials</li>
+                <li>✅ Protected session storage</li>
+                <li>✅ Activity logging enabled</li>
+            </ul>
+            <p style="margin-top: 20px; opacity: 0.8; font-size: 14px;">
+                <strong>Note:</strong> These credentials are stored securely in your browser.
+                Make sure to remember them - there's no "forgot password" option without reset code.
+            </p>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+    <script src="js/setup.js"></script>
+</body>
+</html>

@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const rememberMeCheckbox = document.getElementById('rememberMe');
     const loginBtn = document.getElementById('loginBtn');
     const errorMessage = document.getElementById('errorMessage');
-    const demoAlert = document.getElementById('demoAlert');
 
     // Handle form submission
     loginForm.addEventListener('submit', async (e) => {
@@ -32,11 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const result = await AdminAuth.login(username, password);
 
         if (result.success) {
-            // Hide demo alert on first successful login
-            if (demoAlert) {
-                localStorage.setItem('demo_alert_dismissed', 'true');
-            }
-
             // Show success message
             showSuccess('Login successful! Redirecting...');
 
@@ -51,13 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
             // Shake animation on error
             loginForm.classList.add('shake');
             setTimeout(() => loginForm.classList.remove('shake'), 500);
-        }
-    });
-
-    // Auto-fill demo credentials (for demo purposes only!)
-    usernameInput.addEventListener('focus', () => {
-        if (demoAlert && !localStorage.getItem('demo_alert_dismissed')) {
-            demoAlert.style.animation = 'pulse 0.5s';
         }
     });
 
@@ -87,11 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
         errorMessage.className = 'alert alert-success';
         errorMessage.textContent = message;
         errorMessage.style.display = 'block';
-    }
-
-    // Dismiss demo alert
-    if (demoAlert && localStorage.getItem('demo_alert_dismissed')) {
-        demoAlert.style.display = 'none';
     }
 
     // Focus username field

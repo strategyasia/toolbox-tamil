@@ -1,26 +1,90 @@
 /**
- * ToolBox Tamil - Admin Authentication System
- * Handles login, session management, and security
+ * ToolBox Tamil - Secure Admin Authentication System
+ * Handles login, session management, and security with password hashing
  */
 
 const AdminAuth = {
     // Configuration
     SESSION_KEY: 'toolbox_admin_session',
-    TIMEOUT_KEY: 'toolbox_admin_timeout',
+    CREDENTIALS_KEY: 'toolbox_admin_credentials_secure',
     SESSION_DURATION: 30 * 60 * 1000, // 30 minutes in milliseconds
-    
-    // Default credentials (CHANGE THESE!)
-    DEFAULT_CREDENTIALS: {
-        username: 'admin',
-        password: 'admin123' // Hash this in production!
-    },
 
     /**
      * Initialize authentication system
      */
     init() {
+        this.checkFirstTimeSetup();
         this.checkSession();
         this.setupInactivityTimer();
+    },
+
+    /**
+     * Check if this is first time setup
+     */
+    checkFirstTimeSetup() {
+        const credentials = localStorage.getItem(this.CREDENTIALS_KEY);
+        const currentPage = window.location.pathname;
+
+        if (!credentials && !currentPage.includes('setup.html')) {
+            // No credentials set, redirect to setup
+            if (!currentPage.includes('setup.html') && !currentPage.includes('login.html')) {
+                window.location.href = 'setup.html';
+            }
+        }
+    },
+
+    /**
+     * Hash password using SHA-256 equivalent
+     */
+    async hashPassword(password) {
+        // Use Web Crypto API for secure hashing
+        const encoder = new TextEncoder();
+        const data = encoder.encode(password + 'toolbox_tamil_salt_2024'); // Add salt
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        return hashHex;
+    },
+
+    /**
+     * Setup initial admin credentials (first time only)
+     */
+    async setupCredentials(username, password) {
+        try {
+            // Validate inputs
+            if (!username || username.length < 3) {
+                return { success: false, error: 'Username must be at least 3 characters' };
+            }
+
+            if (!password || password.length < 8) {
+                return { success: false, error: 'Password must be at least 8 characters' };
+            }
+
+            // Check if already setup
+            if (localStorage.getItem(this.CREDENTIALS_KEY)) {
+                return { success: false, error: 'Admin already configured' };
+            }
+
+            // Hash password
+            const hashedPassword = await this.hashPassword(password);
+
+            // Store credentials securely
+            const credentials = {
+                username: username,
+                password: hashedPassword,
+                createdAt: Date.now(),
+                lastChanged: Date.now()
+            };
+
+            localStorage.setItem(this.CREDENTIALS_KEY, JSON.stringify(credentials));
+
+            // Log activity
+            this.logActivity('setup', 'Admin account created');
+
+            return { success: true };
+        } catch (error) {
+            return { success: false, error: 'Setup failed. Please try again.' };
+        }
     },
 
     /**
@@ -29,10 +93,18 @@ const AdminAuth = {
     async login(username, password) {
         try {
             // Simulate API call delay
-            await this.delay(800);
+            await this.delay(500);
+
+            // Check if credentials are set up
+            const credentials = localStorage.getItem(this.CREDENTIALS_KEY);
+            if (!credentials) {
+                return { success: false, error: 'Admin not set up. Please complete setup first.' };
+            }
 
             // Validate credentials
-            if (this.validateCredentials(username, password)) {
+            const isValid = await this.validateCredentials(username, password);
+
+            if (isValid) {
                 const session = {
                     username: username,
                     loginTime: Date.now(),
@@ -42,14 +114,14 @@ const AdminAuth = {
 
                 // Store session
                 localStorage.setItem(this.SESSION_KEY, JSON.stringify(session));
-                
+
                 // Log activity
                 this.logActivity('login', 'User logged in successfully');
 
                 return { success: true };
             } else {
                 // Log failed attempt
-                this.logActivity('login_failed', 'Failed login attempt');
+                this.logActivity('login_failed', `Failed login attempt for user: ${username}`);
                 return { success: false, error: 'Invalid username or password' };
             }
         } catch (error) {
@@ -58,46 +130,89 @@ const AdminAuth = {
     },
 
     /**
-     * Validate user credentials
+     * Validate user credentials with hashed password
      */
-    validateCredentials(username, password) {
-        // Get stored credentials or use defaults
+    async validateCredentials(username, password) {
         const stored = this.getStoredCredentials();
-        return username === stored.username && password === stored.password;
+        if (!stored) return false;
+
+        // Hash the input password
+        const hashedInput = await this.hashPassword(password);
+
+        // Compare username and hashed passwords
+        return username === stored.username && hashedInput === stored.password;
     },
 
     /**
-     * Get stored credentials
+     * Get stored credentials (hashed)
      */
     getStoredCredentials() {
-        const stored = localStorage.getItem('admin_credentials');
-        return stored ? JSON.parse(stored) : this.DEFAULT_CREDENTIALS;
+        const stored = localStorage.getItem(this.CREDENTIALS_KEY);
+        return stored ? JSON.parse(stored) : null;
     },
 
     /**
      * Update admin password
      */
-    updatePassword(currentPassword, newPassword) {
+    async updatePassword(currentPassword, newPassword) {
         const stored = this.getStoredCredentials();
-        
-        if (currentPassword !== stored.password) {
+
+        if (!stored) {
+            return { success: false, error: 'No credentials found' };
+        }
+
+        // Verify current password
+        const currentHashed = await this.hashPassword(currentPassword);
+        if (currentHashed !== stored.password) {
             return { success: false, error: 'Current password is incorrect' };
         }
 
-        if (newPassword.length < 6) {
-            return { success: false, error: 'Password must be at least 6 characters' };
+        if (newPassword.length < 8) {
+            return { success: false, error: 'New password must be at least 8 characters' };
         }
+
+        // Hash new password
+        const newHashed = await this.hashPassword(newPassword);
 
         // Update password
         const updated = {
             username: stored.username,
-            password: newPassword
+            password: newHashed,
+            createdAt: stored.createdAt,
+            lastChanged: Date.now()
         };
-        
-        localStorage.setItem('admin_credentials', JSON.stringify(updated));
+
+        localStorage.setItem(this.CREDENTIALS_KEY, JSON.stringify(updated));
         this.logActivity('password_change', 'Password updated successfully');
-        
+
         return { success: true };
+    },
+
+    /**
+     * Reset admin (emergency use only - requires confirmation)
+     */
+    resetAdmin(confirmationCode) {
+        // Security measure: require specific confirmation
+        const expectedCode = 'RESET_TOOLBOX_TAMIL_ADMIN_2024';
+
+        if (confirmationCode !== expectedCode) {
+            this.logActivity('reset_failed', 'Failed admin reset attempt');
+            return { success: false, error: 'Invalid confirmation code' };
+        }
+
+        // Clear all admin data
+        localStorage.removeItem(this.CREDENTIALS_KEY);
+        localStorage.removeItem(this.SESSION_KEY);
+        this.logActivity('reset', 'Admin account reset');
+
+        return { success: true };
+    },
+
+    /**
+     * Check if admin is set up
+     */
+    isSetupComplete() {
+        return localStorage.getItem(this.CREDENTIALS_KEY) !== null;
     },
 
     /**
@@ -106,7 +221,6 @@ const AdminAuth = {
     logout() {
         this.logActivity('logout', 'User logged out');
         localStorage.removeItem(this.SESSION_KEY);
-        localStorage.removeItem(this.TIMEOUT_KEY);
         window.location.href = 'login.html';
     },
 
@@ -115,7 +229,7 @@ const AdminAuth = {
      */
     isAuthenticated() {
         const session = this.getSession();
-        
+
         if (!session) return false;
 
         // Check if session has expired
@@ -148,14 +262,32 @@ const AdminAuth = {
     checkSession() {
         const currentPage = window.location.pathname;
         const isLoginPage = currentPage.includes('login.html');
+        const isSetupPage = currentPage.includes('setup.html');
         const isAuthenticated = this.isAuthenticated();
+        const isSetup = this.isSetupComplete();
 
-        if (isLoginPage && isAuthenticated) {
-            // Already logged in, redirect to dashboard
-            window.location.href = 'index.html';
-        } else if (!isLoginPage && !isAuthenticated) {
-            // Not logged in, redirect to login
+        // If not set up, redirect to setup page
+        if (!isSetup && !isSetupPage) {
+            window.location.href = 'setup.html';
+            return;
+        }
+
+        // If set up but not logged in and not on login/setup page
+        if (isSetup && !isAuthenticated && !isLoginPage && !isSetupPage) {
             window.location.href = 'login.html';
+            return;
+        }
+
+        // If logged in and on login page, redirect to dashboard
+        if (isLoginPage && isAuthenticated) {
+            window.location.href = 'index.html';
+            return;
+        }
+
+        // If on setup page but already set up, redirect to login
+        if (isSetupPage && isSetup) {
+            window.location.href = 'login.html';
+            return;
         }
     },
 
@@ -164,7 +296,7 @@ const AdminAuth = {
      */
     setupInactivityTimer() {
         const events = ['mousedown', 'keypress', 'scroll', 'touchstart'];
-        
+
         events.forEach(event => {
             document.addEventListener(event, () => {
                 if (this.isAuthenticated()) {
@@ -177,7 +309,7 @@ const AdminAuth = {
 
         // Check every minute for session timeout
         setInterval(() => {
-            if (!this.isAuthenticated() && !window.location.pathname.includes('login.html')) {
+            if (!this.isAuthenticated() && !window.location.pathname.includes('login.html') && !window.location.pathname.includes('setup.html')) {
                 alert('Your session has expired. Please login again.');
                 this.logout();
             }
@@ -200,7 +332,7 @@ const AdminAuth = {
             timestamp: new Date().toISOString(),
             type: type,
             description: description,
-            ip: 'Local', // In production, get real IP
+            ip: 'Local',
             status: type.includes('failed') ? 'failed' : 'success'
         });
 
