@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - ToolBox Tamil</title>
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="admin-dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="40" height="40" rx="8" fill="url(#gradient)"/>
+                <path d="M12 20L18 26L28 14" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                <defs>
+                    <linearGradient id="gradient" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#FF6B6B"/>
+                        <stop offset="1" stop-color="#FF8E53"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+            <h2>ToolBox Tamil</h2>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="#" class="nav-item active" data-section="overview">
+                <span class="icon">📊</span>
+                <span>Overview</span>
+            </a>
+            <a href="#" class="nav-item" data-section="ads">
+                <span class="icon">💰</span>
+                <span>Ad Management</span>
+            </a>
+            <a href="#" class="nav-item" data-section="analytics">
+                <span class="icon">📈</span>
+                <span>Analytics</span>
+            </a>
+            <a href="#" class="nav-item" data-section="tools">
+                <span class="icon">🛠️</span>
+                <span>Tools Manager</span>
+            </a>
+            <a href="#" class="nav-item" data-section="settings">
+                <span class="icon">⚙️</span>
+                <span>Settings</span>
+            </a>
+            <a href="#" class="nav-item" data-section="logs">
+                <span class="icon">📝</span>
+                <span>Activity Logs</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar">A</div>
+                <div class="user-details">
+                    <div class="user-name" id="adminUsername">Admin</div>
+                    <div class="user-role">Administrator</div>
+                </div>
+            </div>
+            <button class="btn btn-logout" id="logoutBtn">
+                <span>🚪</span> Logout
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <h1 id="pageTitle">Dashboard Overview</h1>
+                <p id="pageSubtitle">Welcome back! Here's what's happening today.</p>
+            </div>
+            <div class="header-right">
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Today</span>
+                        <span class="stat-value" id="todayVisitors">-</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">This Month</span>
+                        <span class="stat-value" id="monthVisitors">-</span>
+                    </div>
+                </div>
+                <button class="btn btn-icon" id="refreshBtn" title="Refresh Data">
+                    🔄
+                </button>
+            </div>
+        </header>
+
+        <!-- Content Sections -->
+        <div class="content-wrapper">
+            <!-- Overview Section -->
+            <section id="section-overview" class="content-section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-info">
+                            <h3>Total Visitors</h3>
+                            <p class="stat-number" id="totalVisitors">Loading...</p>
+                            <span class="stat-change positive">+12.5%</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-info">
+                            <h3>Ad Revenue</h3>
+                            <p class="stat-number" id="adRevenue">$0.00</p>
+                            <span class="stat-change positive">+8.2%</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📊</div>
+                        <div class="stat-info">
+                            <h3>Total Clicks</h3>
+                            <p class="stat-number" id="totalClicks">-</p>
+                            <span class="stat-change negative">-2.1%</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🛠️</div>
+                        <div class="stat-info">
+                            <h3>Active Tools</h3>
+                            <p class="stat-number">5</p>
+                            <span class="stat-change neutral">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-row">
+                    <div class="chart-card">
+                        <h3>Traffic Overview</h3>
+                        <canvas id="trafficChart"></canvas>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Top Tools Usage</h3>
+                        <canvas id="toolsChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="recent-activity">
+                    <h3>Recent Activity</h3>
+                    <div class="activity-list" id="activityList">
+                        <div class="activity-item">
+                            <span class="activity-icon">👁️</span>
+                            <div class="activity-content">
+                                <p><strong>New visitor</strong> from India used PDF to Word tool</p>
+                                <span class="activity-time">2 minutes ago</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <span class="activity-icon">💰</span>
+                            <div class="activity-content">
+                                <p><strong>Ad clicked</strong> - Top leaderboard banner</p>
+                                <span class="activity-time">5 minutes ago</span>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <span class="activity-icon">🔧</span>
+                            <div class="activity-content">
+                                <p><strong>Tool used</strong> - Tamil Typing Tool accessed 15 times</p>
+                                <span class="activity-time">10 minutes ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Ad Management Section -->
+            <section id="section-ads" class="content-section">
+                <div class="section-header">
+                    <h2>Advertisement Management</h2>
+                    <button class="btn btn-primary" id="saveAdsBtn">💾 Save Changes</button>
+                </div>
+
+                <div class="settings-card">
+                    <h3>🎯 Global Ad Settings</h3>
+                    <div class="form-group">
+                        <label class="toggle-label">
+                            <input type="checkbox" id="adsEnabled" class="toggle-input">
+                            <span class="toggle-slider"></span>
+                            <span class="toggle-text">Enable Advertisements</span>
+                        </label>
+                        <p class="form-help">Turn all ads on or off across the entire website</p>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="adNetwork">Ad Network</label>
+                            <select id="adNetwork">
+                                <option value="adsense">Google AdSense</option>
+                                <option value="medianet">Media.net</option>
+                                <option value="propeller">PropellerAds</option>
+                                <option value="custom">Custom/Direct</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="publisherId">Publisher ID</label>
+                            <input type="text" id="publisherId" placeholder="ca-pub-XXXXXXXXXXXXXXXX">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <h3>📍 Ad Slot Configuration</h3>
+                    <div class="ad-slots-list">
+                        <div class="ad-slot-item">
+                            <div class="ad-slot-info">
+                                <h4>Top Leaderboard (Homepage)</h4>
+                                <p>728x90 - After header</p>
+                            </div>
+                            <div class="ad-slot-controls">
+                                <input type="text" placeholder="Ad Unit ID" class="ad-unit-input" data-slot="top-leaderboard">
+                                <label class="toggle-label">
+                                    <input type="checkbox" class="toggle-input" checked data-slot="top-leaderboard">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="ad-slot-item">
+                            <div class="ad-slot-info">
+                                <h4>After Hero Banner</h4>
+                                <p>970x90 - Below hero section</p>
+                            </div>
+                            <div class="ad-slot-controls">
+                                <input type="text" placeholder="Ad Unit ID" class="ad-unit-input" data-slot="after-hero">
+                                <label class="toggle-label">
+                                    <input type="checkbox" class="toggle-input" checked data-slot="after-hero">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="ad-slot-item">
+                            <div class="ad-slot-info">
+                                <h4>Mid Section Rectangle 1</h4>
+                                <p>300x250 - Between tool categories</p>
+                            </div>
+                            <div class="ad-slot-controls">
+                                <input type="text" placeholder="Ad Unit ID" class="ad-unit-input" data-slot="mid-section-1">
+                                <label class="toggle-label">
+                                    <input type="checkbox" class="toggle-input" checked data-slot="mid-section-1">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="ad-slot-item">
+                            <div class="ad-slot-info">
+                                <h4>Mid Section Rectangle 2</h4>
+                                <p>300x250 - Between tool categories</p>
+                            </div>
+                            <div class="ad-slot-controls">
+                                <input type="text" placeholder="Ad Unit ID" class="ad-unit-input" data-slot="mid-section-2">
+                                <label class="toggle-label">
+                                    <input type="checkbox" class="toggle-input" checked data-slot="mid-section-2">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="ad-slot-item">
+                            <div class="ad-slot-info">
+                                <h4>Before Footer Banner</h4>
+                                <p>728x90 - Above footer</p>
+                            </div>
+                            <div class="ad-slot-controls">
+                                <input type="text" placeholder="Ad Unit ID" class="ad-unit-input" data-slot="before-footer">
+                                <label class="toggle-label">
+                                    <input type="checkbox" class="toggle-input" checked data-slot="before-footer">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="ad-slot-item">
+                            <div class="ad-slot-info">
+                                <h4>Tool Pages - Top Banner</h4>
+                                <p>728x90 - All tool pages</p>
+                            </div>
+                            <div class="ad-slot-controls">
+                                <input type="text" placeholder="Ad Unit ID" class="ad-unit-input" data-slot="tool-top">
+                                <label class="toggle-label">
+                                    <input type="checkbox" class="toggle-input" checked data-slot="tool-top">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="ad-slot-item">
+                            <div class="ad-slot-info">
+                                <h4>Tool Pages - Bottom Banner</h4>
+                                <p>728x90 - All tool pages</p>
+                            </div>
+                            <div class="ad-slot-controls">
+                                <input type="text" placeholder="Ad Unit ID" class="ad-unit-input" data-slot="tool-bottom">
+                                <label class="toggle-label">
+                                    <input type="checkbox" class="toggle-input" checked data-slot="tool-bottom">
+                                    <span class="toggle-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-card">
+                    <h3>📊 Ad Performance (Last 30 Days)</h3>
+                    <div class="ad-stats-grid">
+                        <div class="ad-stat">
+                            <h4>Impressions</h4>
+                            <p class="ad-stat-value">12,450</p>
+                        </div>
+                        <div class="ad-stat">
+                            <h4>Clicks</h4>
+                            <p class="ad-stat-value">124</p>
+                        </div>
+                        <div class="ad-stat">
+                            <h4>CTR</h4>
+                            <p class="ad-stat-value">1.00%</p>
+                        </div>
+                        <div class="ad-stat">
+                            <h4>Revenue</h4>
+                            <p class="ad-stat-value">$24.80</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics Section -->
+            <section id="section-analytics" class="content-section">
+                <div class="section-header">
+                    <h2>Traffic Analytics</h2>
+                    <div class="date-range-picker">
+                        <button class="btn btn-secondary active">7 Days</button>
+                        <button class="btn btn-secondary">30 Days</button>
+                        <button class="btn btn-secondary">90 Days</button>
+                    </div>
+                </div>
+
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h3>Visitor Statistics</h3>
+                        <canvas id="visitorsChart"></canvas>
+                    </div>
+                    <div class="analytics-card">
+                        <h3>Traffic Sources</h3>
+                        <canvas id="sourcesChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h3>Device Breakdown</h3>
+                        <div class="device-stats">
+                            <div class="device-item">
+                                <span class="device-name">💻 Desktop</span>
+                                <div class="device-bar">
+                                    <div class="device-fill" style="width: 55%"></div>
+                                </div>
+                                <span class="device-percent">55%</span>
+                            </div>
+                            <div class="device-item">
+                                <span class="device-name">📱 Mobile</span>
+                                <div class="device-bar">
+                                    <div class="device-fill" style="width: 35%"></div>
+                                </div>
+                                <span class="device-percent">35%</span>
+                            </div>
+                            <div class="device-item">
+                                <span class="device-name">📟 Tablet</span>
+                                <div class="device-bar">
+                                    <div class="device-fill" style="width: 10%"></div>
+                                </div>
+                                <span class="device-percent">10%</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="analytics-card">
+                        <h3>Top Countries</h3>
+                        <div class="countries-list">
+                            <div class="country-item">
+                                <span class="flag">🇮🇳</span>
+                                <span class="country-name">India</span>
+                                <span class="country-value">2,450</span>
+                            </div>
+                            <div class="country-item">
+                                <span class="flag">🇺🇸</span>
+                                <span class="country-name">United States</span>
+                                <span class="country-value">1,230</span>
+                            </div>
+                            <div class="country-item">
+                                <span class="flag">🇬🇧</span>
+                                <span class="country-name">United Kingdom</span>
+                                <span class="country-value">890</span>
+                            </div>
+                            <div class="country-item">
+                                <span class="flag">🇨🇦</span>
+                                <span class="country-name">Canada</span>
+                                <span class="country-value">456</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tools Manager Section -->
+            <section id="section-tools" class="content-section">
+                <div class="section-header">
+                    <h2>Tools Management</h2>
+                    <button class="btn btn-primary">+ Add New Tool</button>
+                </div>
+
+                <div class="tools-table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Tool Name</th>
+                                <th>Category</th>
+                                <th>Usage (30d)</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>PDF to Word</strong></td>
+                                <td>PDF Tools</td>
+                                <td>1,245 uses</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                                <td>
+                                    <button class="btn btn-icon">✏️</button>
+                                    <button class="btn btn-icon">📊</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>PDF Merger</strong></td>
+                                <td>PDF Tools</td>
+                                <td>890 uses</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                                <td>
+                                    <button class="btn btn-icon">✏️</button>
+                                    <button class="btn btn-icon">📊</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tamil Typing</strong></td>
+                                <td>Tamil Tools</td>
+                                <td>2,345 uses</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                                <td>
+                                    <button class="btn btn-icon">✏️</button>
+                                    <button class="btn btn-icon">📊</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>QR Generator</strong></td>
+                                <td>Utility Tools</td>
+                                <td>678 uses</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                                <td>
+                                    <button class="btn btn-icon">✏️</button>
+                                    <button class="btn btn-icon">📊</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Password Generator</strong></td>
+                                <td>Utility Tools</td>
+                                <td>1,123 uses</td>
+                                <td><span class="badge badge-success">Active</span></td>
+                                <td>
+                                    <button class="btn btn-icon">✏️</button>
+                                    <button class="btn btn-icon">📊</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="section-settings" class="content-section">
+                <div class="section-header">
+                    <h2>Settings</h2>
+                    <button class="btn btn-primary" id="saveSettingsBtn">💾 Save All Settings</button>
+                </div>
+
+                <div class="settings-tabs">
+                    <button class="tab-btn active" data-tab="general">General</button>
+                    <button class="tab-btn" data-tab="security">Security</button>
+                    <button class="tab-btn" data-tab="integrations">Integrations</button>
+                    <button class="tab-btn" data-tab="advanced">Advanced</button>
+                </div>
+
+                <div class="tab-content active" id="tab-general">
+                    <div class="settings-card">
+                        <h3>🌐 Website Settings</h3>
+                        <div class="form-group">
+                            <label for="siteTitle">Site Title</label>
+                            <input type="text" id="siteTitle" value="ToolBox Tamil - Free Online Tools">
+                        </div>
+                        <div class="form-group">
+                            <label for="siteDescription">Site Description</label>
+                            <textarea id="siteDescription" rows="3">Free online tools for PDF conversion, image editing, Tamil typing, and more.</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactEmail">Contact Email</label>
+                            <input type="email" id="contactEmail" placeholder="admin@toolboxtamil.com">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-security">
+                    <div class="settings-card">
+                        <h3>🔒 Security Settings</h3>
+                        <div class="form-group">
+                            <label for="currentPassword">Current Password</label>
+                            <input type="password" id="currentPassword" placeholder="Enter current password">
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword">New Password</label>
+                            <input type="password" id="newPassword" placeholder="Enter new password">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword">Confirm New Password</label>
+                            <input type="password" id="confirmPassword" placeholder="Confirm new password">
+                        </div>
+                        <button class="btn btn-primary">Update Password</button>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3>🛡️ Session Settings</h3>
+                        <div class="form-group">
+                            <label for="sessionTimeout">Auto Logout (minutes)</label>
+                            <input type="number" id="sessionTimeout" value="30" min="5" max="120">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-integrations">
+                    <div class="settings-card">
+                        <h3>📊 Google Analytics</h3>
+                        <div class="form-group">
+                            <label for="gaTrackingId">Tracking ID (GA4)</label>
+                            <input type="text" id="gaTrackingId" placeholder="G-XXXXXXXXXX">
+                        </div>
+                        <div class="form-group">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="gaEnabled" class="toggle-input">
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-text">Enable Google Analytics</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3>🔍 Google Search Console</h3>
+                        <div class="form-group">
+                            <label for="gscVerification">Verification Code</label>
+                            <input type="text" id="gscVerification" placeholder="google-site-verification=...">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="tab-advanced">
+                    <div class="settings-card">
+                        <h3>⚡ Performance</h3>
+                        <div class="form-group">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="cacheEnabled" class="toggle-input" checked>
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-text">Enable Browser Caching</span>
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="toggle-label">
+                                <input type="checkbox" id="compressionEnabled" class="toggle-input" checked>
+                                <span class="toggle-slider"></span>
+                                <span class="toggle-text">Enable Asset Compression</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-card danger-zone">
+                        <h3>⚠️ Danger Zone</h3>
+                        <div class="danger-actions">
+                            <button class="btn btn-danger">Clear All Cache</button>
+                            <button class="btn btn-danger">Reset Analytics Data</button>
+                            <button class="btn btn-danger">Export All Data</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Activity Logs Section -->
+            <section id="section-logs" class="content-section">
+                <div class="section-header">
+                    <h2>Activity Logs</h2>
+                    <button class="btn btn-secondary">Export Logs</button>
+                </div>
+
+                <div class="logs-filters">
+                    <select id="logType">
+                        <option value="all">All Activities</option>
+                        <option value="login">Login Events</option>
+                        <option value="settings">Settings Changes</option>
+                        <option value="ads">Ad Management</option>
+                    </select>
+                    <input type="date" id="logDateFrom">
+                    <input type="date" id="logDateTo">
+                    <button class="btn btn-primary">Filter</button>
+                </div>
+
+                <div class="logs-table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Event Type</th>
+                                <th>Description</th>
+                                <th>IP Address</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logsTableBody">
+                            <tr>
+                                <td>2024-01-21 15:30:45</td>
+                                <td><span class="badge badge-info">Login</span></td>
+                                <td>Admin user logged in</td>
+                                <td>192.168.1.100</td>
+                                <td><span class="badge badge-success">Success</span></td>
+                            </tr>
+                            <tr>
+                                <td>2024-01-21 15:25:12</td>
+                                <td><span class="badge badge-warning">Settings</span></td>
+                                <td>Ad configuration updated</td>
+                                <td>192.168.1.100</td>
+                                <td><span class="badge badge-success">Success</span></td>
+                            </tr>
+                            <tr>
+                                <td>2024-01-21 14:15:33</td>
+                                <td><span class="badge badge-info">Login</span></td>
+                                <td>Failed login attempt</td>
+                                <td>203.45.67.89</td>
+                                <td><span class="badge badge-danger">Failed</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
