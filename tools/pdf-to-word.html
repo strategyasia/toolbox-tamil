@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to Word Converter | ToolBox Tamil</title>
+    <meta name="description" content="Convert PDF to Word document (DOCX). Extract text from PDF files for free.">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/tool-page.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docx/8.5.0/docx.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="../index.html" class="back-btn">← Back to Tools</a>
+                <div class="language-switcher">
+                    <button class="lang-btn active" data-lang="en">English</button>
+                    <button class="lang-btn" data-lang="ta">தமிழ்</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="tool-container">
+        <div class="container">
+            <div class="tool-header">
+                <h1 data-en="PDF to Word Converter" data-ta="PDF இலிருந்து Word மாற்றி">PDF to Word Converter</h1>
+                <p data-en="Convert your PDF files to editable Word documents (DOCX)" data-ta="உங்கள் PDF கோப்புகளை திருத்தக்கூடிய Word ஆவணங்களாக (DOCX) மாற்றவும்">
+                    Convert your PDF files to editable Word documents (DOCX)
+                </p>
+            </div>
+
+            <div class="tool-workspace">
+                <div class="upload-section">
+                    <div class="upload-area" id="uploadArea">
+                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <h3 data-en="Drop PDF file here or click to upload" data-ta="PDF கோப்பை இங்கே இடவும் அல்லது பதிவேற்ற கிளிக் செய்யவும்">Drop PDF file here or click to upload</h3>
+                        <p data-en="Maximum file size: 10MB" data-ta="அதிகபட்ச கோப்பு அளவு: 10MB">Maximum file size: 10MB</p>
+                        <input type="file" id="pdfFile" accept=".pdf" style="display: none;">
+                        <button class="btn btn-primary" id="selectFileBtn" data-en="Select PDF File" data-ta="PDF கோப்பைத் தேர்ந்தெடுக்கவும்">Select PDF File</button>
+                    </div>
+
+                    <div class="file-info" id="fileInfo" style="display: none;">
+                        <div class="file-details">
+                            <svg width="48" height="48" viewBox="0 0 24 24" fill="#FF6B6B">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8" fill="#fff"></polyline>
+                            </svg>
+                            <div>
+                                <h4 id="fileName">document.pdf</h4>
+                                <p id="fileSize">0 KB</p>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary" id="removeFileBtn" data-en="Remove" data-ta="அகற்று">Remove</button>
+                    </div>
+                </div>
+
+                <div class="progress-section" id="progressSection" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <p id="progressText" data-en="Processing..." data-ta="செயலாக்குகிறது...">Processing...</p>
+                </div>
+
+                <div class="preview-section" id="previewSection" style="display: none;">
+                    <h3 data-en="Extracted Text Preview" data-ta="பிரித்தெடுக்கப்பட்ட உரை முன்னோட்டம்">Extracted Text Preview</h3>
+                    <div class="preview-content" id="previewContent"></div>
+                </div>
+
+                <div class="tool-actions" id="actionButtons" style="display: none;">
+                    <button class="btn btn-primary" id="downloadBtn" data-en="📥 Download as Word (DOCX)" data-ta="📥 Word (DOCX) ஆக பதிவிறக்கவும்">📥 Download as Word (DOCX)</button>
+                    <button class="btn btn-secondary" id="copyTextBtn" data-en="📋 Copy Text" data-ta="📋 உரையை நகலெடுக்கவும்">📋 Copy Text</button>
+                    <button class="btn btn-secondary" id="newFileBtn" data-en="🔄 Convert Another File" data-ta="🔄 மற்றொரு கோப்பை மாற்றவும்">🔄 Convert Another File</button>
+                </div>
+
+                <div class="info-box">
+                    <h3>ℹ️ <span data-en="How it works" data-ta="இது எவ்வாறு செயல்படுகிறது">How it works</span></h3>
+                    <ul>
+                        <li data-en="Upload your PDF file (max 10MB)" data-ta="உங்கள் PDF கோப்பைப் பதிவேற்றவும் (அதிகபட்சம் 10MB)">Upload your PDF file (max 10MB)</li>
+                        <li data-en="Text is extracted from the PDF" data-ta="PDF இலிருந்து உரை பிரித்தெடுக்கப்படுகிறது">Text is extracted from the PDF</li>
+                        <li data-en="Download as editable Word document" data-ta="திருத்தக்கூடிய Word ஆவணமாகப் பதிவிறக்கவும்">Download as editable Word document</li>
+                        <li data-en="All processing happens in your browser - your files never leave your device" data-ta="அனைத்து செயலாக்கமும் உங்கள் உலாவியில் நடக்கிறது - உங்கள் கோப்புகள் உங்கள் சாதனத்தை விட்டு வெளியேறாது">All processing happens in your browser - your files never leave your device</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/pdf-to-word.js"></script>
+</body>
+</html>

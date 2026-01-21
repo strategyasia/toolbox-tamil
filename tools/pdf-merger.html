@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Merger - Combine PDF Files | ToolBox Tamil</title>
+    <meta name="description" content="Merge multiple PDF files into one. Free PDF combiner tool.">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/tool-page.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="../index.html" class="back-btn">← Back to Tools</a>
+                <div class="language-switcher">
+                    <button class="lang-btn active" data-lang="en">English</button>
+                    <button class="lang-btn" data-lang="ta">தமிழ்</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="tool-container">
+        <div class="container">
+            <div class="tool-header">
+                <h1 data-en="PDF Merger" data-ta="PDF இணைப்பு">PDF Merger</h1>
+                <p data-en="Combine multiple PDF files into one single PDF document" data-ta="பல PDF கோப்புகளை ஒரு PDF ஆவணமாக இணைக்கவும்">
+                    Combine multiple PDF files into one single PDF document
+                </p>
+            </div>
+
+            <div class="tool-workspace">
+                <div class="upload-section">
+                    <div class="upload-area" id="uploadArea">
+                        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <h3 data-en="Drop PDF files here or click to upload" data-ta="PDF கோப்புகளை இங்கே இடவும் அல்லது பதிவேற்ற கிளிக் செய்யவும்">Drop PDF files here or click to upload</h3>
+                        <p data-en="Select multiple PDF files to merge" data-ta="இணைக்க பல PDF கோப்புகளைத் தேர்ந்தெடுக்கவும்">Select multiple PDF files to merge</p>
+                        <input type="file" id="pdfFiles" accept=".pdf" multiple style="display: none;">
+                        <button class="btn btn-primary" id="selectFilesBtn" data-en="Select PDF Files" data-ta="PDF கோப்புகளைத் தேர்ந்தெடுக்கவும்">Select PDF Files</button>
+                    </div>
+
+                    <div id="filesContainer" class="files-container" style="display: none;">
+                        <h3 data-en="Selected Files (Drag to reorder)" data-ta="தேர்ந்தெடுக்கப்பட்ட கோப்புகள் (மறுவரிசைப்படுத்த இழுக்கவும்)">Selected Files (Drag to reorder)</h3>
+                        <div id="filesList" class="files-list"></div>
+                        <button class="btn btn-secondary" id="addMoreBtn" data-en="+ Add More Files" data-ta="+ மேலும் கோப்புகளைச் சேர்க்கவும்">+ Add More Files</button>
+                    </div>
+                </div>
+
+                <div class="progress-section" id="progressSection" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <p id="progressText" data-en="Merging PDFs..." data-ta="PDFகளை இணைக்கிறது...">Merging PDFs...</p>
+                </div>
+
+                <div class="tool-actions" id="actionButtons" style="display: none;">
+                    <button class="btn btn-primary" id="mergeBtn" data-en="🔗 Merge PDFs" data-ta="🔗 PDFகளை இணைக்கவும்">🔗 Merge PDFs</button>
+                    <button class="btn btn-secondary" id="clearBtn" data-en="🗑️ Clear All" data-ta="🗑️ அனைத்தையும் அழி">🗑️ Clear All</button>
+                </div>
+
+                <div class="info-box">
+                    <h3>ℹ️ <span data-en="How to use" data-ta="எவ்வாறு பயன்படுத்துவது">How to use</span></h3>
+                    <ul>
+                        <li data-en="Select multiple PDF files (minimum 2 files)" data-ta="பல PDF கோப்புகளைத் தேர்ந்தெடுக்கவும் (குறைந்தபட்சம் 2 கோப்புகள்)">Select multiple PDF files (minimum 2 files)</li>
+                        <li data-en="Drag and drop files to change their order" data-ta="கோப்புகளின் வரிசையை மாற்ற இழுத்து விடவும்">Drag and drop files to change their order</li>
+                        <li data-en="Click 'Merge PDFs' to combine them" data-ta="'PDFகளை இணை' என்பதைக் கிளிக் செய்து அவற்றை இணைக்கவும்">Click 'Merge PDFs' to combine them</li>
+                        <li data-en="Download the merged PDF file" data-ta="இணைக்கப்பட்ட PDF கோப்பைப் பதிவிறக்கவும்">Download the merged PDF file</li>
+                        <li data-en="All processing happens locally - your files never leave your device" data-ta="அனைத்து செயலாக்கமும் உள்நாட்டில் நடக்கிறது - உங்கள் கோப்புகள் உங்கள் சாதனத்தை விட்டு வெளியேறாது">All processing happens locally - your files never leave your device</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/pdf-merger.js"></script>
+</body>
+</html>

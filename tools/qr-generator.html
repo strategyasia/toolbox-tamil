@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator | ToolBox Tamil</title>
+    <meta name="description" content="Generate QR codes for free. Create QR codes for URLs, text, phone numbers, and more.">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/tool-page.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="../index.html" class="back-btn">← Back to Tools</a>
+                <div class="language-switcher">
+                    <button class="lang-btn active" data-lang="en">English</button>
+                    <button class="lang-btn" data-lang="ta">தமிழ்</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="tool-container">
+        <div class="container">
+            <div class="tool-header">
+                <h1 data-en="QR Code Generator" data-ta="QR குறியீடு உருவாக்கி">QR Code Generator</h1>
+                <p data-en="Create QR codes for URLs, text, phone numbers, and more" data-ta="URL கள், உரை, தொலைபேசி எண்கள் மற்றும் பலவற்றிற்கான QR குறியீடுகளை உருவாக்கவும்">
+                    Create QR codes for URLs, text, phone numbers, and more
+                </p>
+            </div>
+
+            <div class="tool-workspace">
+                <div class="qr-input-section">
+                    <div class="input-type-selector">
+                        <button class="type-btn active" data-type="url" data-en="🔗 Website URL" data-ta="🔗 இணையதள URL">🔗 Website URL</button>
+                        <button class="type-btn" data-type="text" data-en="📝 Text" data-ta="📝 உரை">📝 Text</button>
+                        <button class="type-btn" data-type="phone" data-en="📱 Phone" data-ta="📱 தொலைபேசி">📱 Phone</button>
+                        <button class="type-btn" data-type="email" data-en="📧 Email" data-ta="📧 மின்னஞ்சல்">📧 Email</button>
+                        <button class="type-btn" data-type="wifi" data-en="📶 WiFi" data-ta="📶 WiFi">📶 WiFi</button>
+                    </div>
+
+                    <div class="input-container" id="urlInput">
+                        <label data-en="Enter Website URL:" data-ta="இணையதள URL ஐ உள்ளிடவும்:">Enter Website URL:</label>
+                        <input type="url" id="urlField" placeholder="https://example.com" class="input-field">
+                    </div>
+
+                    <div class="input-container" id="textInput" style="display: none;">
+                        <label data-en="Enter Text:" data-ta="உரையை உள்ளிடவும்:">Enter Text:</label>
+                        <textarea id="textField" placeholder="Your text here..." class="input-field" rows="4"></textarea>
+                    </div>
+
+                    <div class="input-container" id="phoneInput" style="display: none;">
+                        <label data-en="Enter Phone Number:" data-ta="தொலைபேசி எண்ணை உள்ளிடவும்:">Enter Phone Number:</label>
+                        <input type="tel" id="phoneField" placeholder="+1234567890" class="input-field">
+                    </div>
+
+                    <div class="input-container" id="emailInput" style="display: none;">
+                        <label data-en="Enter Email Address:" data-ta="மின்னஞ்சல் முகவரியை உள்ளிடவும்:">Enter Email Address:</label>
+                        <input type="email" id="emailField" placeholder="name@example.com" class="input-field">
+                    </div>
+
+                    <div class="input-container" id="wifiInput" style="display: none;">
+                        <label data-en="WiFi Network Name (SSID):" data-ta="WiFi பிணைய பெயர் (SSID):">WiFi Network Name (SSID):</label>
+                        <input type="text" id="wifiSSID" placeholder="MyWiFi" class="input-field">
+                        <label data-en="Password:" data-ta="கடவுச்சொல்:">Password:</label>
+                        <input type="text" id="wifiPassword" placeholder="password123" class="input-field">
+                        <label data-en="Security Type:" data-ta="பாதுகாப்பு வகை:">Security Type:</label>
+                        <select id="wifiSecurity" class="input-field">
+                            <option value="WPA">WPA/WPA2</option>
+                            <option value="WEP">WEP</option>
+                            <option value="nopass">No Password</option>
+                        </select>
+                    </div>
+
+                    <div class="qr-options">
+                        <h3 data-en="Customize QR Code" data-ta="QR குறியீட்டை தனிப்பயனாக்கவும்">Customize QR Code</h3>
+                        <div class="options-grid">
+                            <div class="option-item">
+                                <label data-en="Size:" data-ta="அளவு:">Size:</label>
+                                <select id="qrSize" class="input-field">
+                                    <option value="200">Small (200x200)</option>
+                                    <option value="300" selected>Medium (300x300)</option>
+                                    <option value="400">Large (400x400)</option>
+                                    <option value="500">Extra Large (500x500)</option>
+                                </select>
+                            </div>
+                            <div class="option-item">
+                                <label data-en="Color:" data-ta="வண்ணம்:">Color:</label>
+                                <input type="color" id="qrColor" value="#000000" class="color-picker">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" id="generateBtn" data-en="🎨 Generate QR Code" data-ta="🎨 QR குறியீட்டை உருவாக்கவும்">🎨 Generate QR Code</button>
+                </div>
+
+                <div class="qr-output-section" id="outputSection" style="display: none;">
+                    <h3 data-en="Your QR Code" data-ta="உங்கள் QR குறியீடு">Your QR Code</h3>
+                    <div class="qr-display" id="qrcode"></div>
+
+                    <div class="tool-actions">
+                        <button class="btn btn-primary" id="downloadBtn" data-en="💾 Download PNG" data-ta="💾 PNG பதிவிறக்கவும்">💾 Download PNG</button>
+                        <button class="btn btn-secondary" id="downloadSVGBtn" data-en="📥 Download SVG" data-ta="📥 SVG பதிவிறக்கவும்">📥 Download SVG</button>
+                        <button class="btn btn-secondary" id="clearBtn" data-en="🔄 Generate New" data-ta="🔄 புதியதை உருவாக்கவும்">🔄 Generate New</button>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h3>ℹ️ <span data-en="QR Code Uses" data-ta="QR குறியீடு பயன்பாடுகள்">QR Code Uses</span></h3>
+                    <ul>
+                        <li data-en="Share website links and URLs" data-ta="இணையதள இணைப்புகளையும் URL களையும் பகிரவும்">Share website links and URLs</li>
+                        <li data-en="Business cards with contact information" data-ta="தொடர்பு தகவலுடன் வணிக அட்டைகள்">Business cards with contact information</li>
+                        <li data-en="WiFi network sharing" data-ta="WiFi பிணைய பகிர்வு">WiFi network sharing</li>
+                        <li data-en="Product information and pricing" data-ta="தயாரிப்பு தகவல் மற்றும் விலை நிர்ணயம்">Product information and pricing</li>
+                        <li data-en="Event registration and tickets" data-ta="நிகழ்வு பதிவு மற்றும் டிக்கெட்டுகள்">Event registration and tickets</li>
+                        <li data-en="Restaurant menus (contactless)" data-ta="உணவக மெனுக்கள் (தொடர்பு இல்லாத)">Restaurant menus (contactless)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/qr-generator.js"></script>
+</body>
+</html>

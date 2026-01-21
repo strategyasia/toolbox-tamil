@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tamil Typing Tool - தமிழ் தட்டச்சு கருவி | ToolBox Tamil</title>
+    <meta name="description" content="Type in Tamil using English keyboard. Easy transliteration from English to Tamil.">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/tool-page.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Tamil:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="../index.html" class="back-btn">← Back to Tools</a>
+                <div class="language-switcher">
+                    <button class="lang-btn active" data-lang="en">English</button>
+                    <button class="lang-btn" data-lang="ta">தமிழ்</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Tool Section -->
+    <section class="tool-container">
+        <div class="container">
+            <div class="tool-header">
+                <h1 data-en="Tamil Typing Tool" data-ta="தமிழ் தட்டச்சு கருவி">Tamil Typing Tool</h1>
+                <p data-en="Type in Tamil using English keyboard - automatically converts English letters to Tamil" data-ta="ஆங்கில விசைப்பலகையைப் பயன்படுத்தி தமிழில் தட்டச்சு செய்யுங்கள் - தானாக ஆங்கில எழுத்துக்களை தமிழாக மாற்றுகிறது">
+                    Type in Tamil using English keyboard - automatically converts English letters to Tamil
+                </p>
+            </div>
+
+            <!-- Typing Area -->
+            <div class="tool-workspace">
+                <div class="typing-instructions">
+                    <h3 data-en="How to use:" data-ta="எவ்வாறு பயன்படுத்துவது:">How to use:</h3>
+                    <ol>
+                        <li data-en="Type English letters in the box below" data-ta="கீழே உள்ள பெட்டியில் ஆங்கில எழுத்துக்களை தட்டச்சு செய்யவும்">Type English letters in the box below</li>
+                        <li data-en="They will automatically convert to Tamil as you type" data-ta="நீங்கள் தட்டச்சு செய்யும்போது அவை தானாக தமிழாக மாறும்">They will automatically convert to Tamil as you type</li>
+                        <li data-en="Example: Type 'vanakkam' → வணக்கம்" data-ta="உதாரணம்: 'vanakkam' தட்டச்சு செய்யவும் → வணக்கம்">Example: Type 'vanakkam' → வணக்கம்</li>
+                    </ol>
+                    <div class="quick-keys">
+                        <strong data-en="Quick Reference:" data-ta="விரைவு குறிப்பு:">Quick Reference:</strong>
+                        <div class="key-grid">
+                            <span>a = அ</span>
+                            <span>aa = ஆ</span>
+                            <span>i = இ</span>
+                            <span>ee = ஈ</span>
+                            <span>ka = க</span>
+                            <span>tha = த</span>
+                            <span>na = ந</span>
+                            <span>ma = ம</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="typing-area">
+                    <label for="input-text" data-en="Type in English:" data-ta="ஆங்கிலத்தில் தட்டச்சு செய்யவும்:">Type in English:</label>
+                    <textarea
+                        id="input-text"
+                        class="input-box"
+                        placeholder="vanakkam, naan tamil kathukiren..."
+                        rows="5"
+                    ></textarea>
+
+                    <label for="output-text" data-en="Tamil Output:" data-ta="தமிழ் வெளியீடு:">Tamil Output:</label>
+                    <textarea
+                        id="output-text"
+                        class="output-box tamil-font"
+                        readonly
+                        rows="5"
+                    ></textarea>
+
+                    <div class="tool-actions">
+                        <button class="btn btn-primary" id="copy-btn" data-en="📋 Copy Tamil Text" data-ta="📋 தமிழ் உரையை நகலெடுக்கவும்">📋 Copy Tamil Text</button>
+                        <button class="btn btn-secondary" id="clear-btn" data-en="🗑️ Clear All" data-ta="🗑️ அனைத்தையும் அழி">🗑️ Clear All</button>
+                        <button class="btn btn-secondary" id="download-btn" data-en="💾 Download" data-ta="💾 பதிவிறக்கவும்">💾 Download</button>
+                    </div>
+                </div>
+
+                <!-- Character Map -->
+                <div class="character-map">
+                    <h3 data-en="Tamil Character Map" data-ta="தமிழ் எழுத்து வரைபடம்">Tamil Character Map</h3>
+                    <div class="char-section">
+                        <h4 data-en="Vowels (உயிர் எழுத்துக்கள்)" data-ta="உயிர் எழுத்துக்கள்">Vowels (உயிர் எழுத்துக்கள்)</h4>
+                        <div class="char-grid">
+                            <div class="char-item"><span class="tamil">அ</span> <span class="english">a</span></div>
+                            <div class="char-item"><span class="tamil">ஆ</span> <span class="english">aa</span></div>
+                            <div class="char-item"><span class="tamil">இ</span> <span class="english">i</span></div>
+                            <div class="char-item"><span class="tamil">ஈ</span> <span class="english">ee</span></div>
+                            <div class="char-item"><span class="tamil">உ</span> <span class="english">u</span></div>
+                            <div class="char-item"><span class="tamil">ஊ</span> <span class="english">oo</span></div>
+                            <div class="char-item"><span class="tamil">எ</span> <span class="english">e</span></div>
+                            <div class="char-item"><span class="tamil">ஏ</span> <span class="english">ae</span></div>
+                            <div class="char-item"><span class="tamil">ஐ</span> <span class="english">ai</span></div>
+                            <div class="char-item"><span class="tamil">ஒ</span> <span class="english">o</span></div>
+                            <div class="char-item"><span class="tamil">ஓ</span> <span class="english">O</span></div>
+                            <div class="char-item"><span class="tamil">ஔ</span> <span class="english">au</span></div>
+                        </div>
+                    </div>
+
+                    <div class="char-section">
+                        <h4 data-en="Consonants (மெய் எழுத்துக்கள்)" data-ta="மெய் எழுத்துக்கள்">Consonants (மெய் எழுத்துக்கள்)</h4>
+                        <div class="char-grid">
+                            <div class="char-item"><span class="tamil">க</span> <span class="english">ka</span></div>
+                            <div class="char-item"><span class="tamil">ங</span> <span class="english">nga</span></div>
+                            <div class="char-item"><span class="tamil">ச</span> <span class="english">cha</span></div>
+                            <div class="char-item"><span class="tamil">ஞ</span> <span class="english">nja</span></div>
+                            <div class="char-item"><span class="tamil">ட</span> <span class="english">ta</span></div>
+                            <div class="char-item"><span class="tamil">ண</span> <span class="english">na</span></div>
+                            <div class="char-item"><span class="tamil">த</span> <span class="english">tha</span></div>
+                            <div class="char-item"><span class="tamil">ந</span> <span class="english">nha</span></div>
+                            <div class="char-item"><span class="tamil">ப</span> <span class="english">pa</span></div>
+                            <div class="char-item"><span class="tamil">ம</span> <span class="english">ma</span></div>
+                            <div class="char-item"><span class="tamil">ய</span> <span class="english">ya</span></div>
+                            <div class="char-item"><span class="tamil">ர</span> <span class="english">ra</span></div>
+                            <div class="char-item"><span class="tamil">ல</span> <span class="english">la</span></div>
+                            <div class="char-item"><span class="tamil">வ</span> <span class="english">va</span></div>
+                            <div class="char-item"><span class="tamil">ழ</span> <span class="english">zha</span></div>
+                            <div class="char-item"><span class="tamil">ள</span> <span class="english">La</span></div>
+                            <div class="char-item"><span class="tamil">ற</span> <span class="english">Ra</span></div>
+                            <div class="char-item"><span class="tamil">ன</span> <span class="english">Na</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/tamil-typing.js"></script>
+</body>
+</html>
