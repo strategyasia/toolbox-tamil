@@ -12,10 +12,45 @@ const AdminAuth = {
     /**
      * Initialize authentication system
      */
-    init() {
+    async init() {
+        await this.autoSetupDefaultAdmin();
         this.checkFirstTimeSetup();
         this.checkSession();
         this.setupInactivityTimer();
+    },
+
+    /**
+     * Auto-setup default admin on first load
+     */
+    async autoSetupDefaultAdmin() {
+        // Check if already set up
+        if (this.isSetupComplete()) {
+            return;
+        }
+
+        // Pre-configured admin credentials
+        const defaultUsername = 'Vinson';
+        const defaultPassword = 'vino98843B@i';
+
+        try {
+            // Hash password
+            const hashedPassword = await this.hashPassword(defaultPassword);
+
+            // Store credentials securely
+            const credentials = {
+                username: defaultUsername,
+                password: hashedPassword,
+                createdAt: Date.now(),
+                lastChanged: Date.now()
+            };
+
+            localStorage.setItem(this.CREDENTIALS_KEY, JSON.stringify(credentials));
+
+            // Log activity
+            this.logActivity('setup', 'Admin account auto-configured');
+        } catch (error) {
+            console.error('Auto-setup failed:', error);
+        }
     },
 
     /**
