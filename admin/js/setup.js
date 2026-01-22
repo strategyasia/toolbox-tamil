@@ -3,7 +3,7 @@
  * Handles first-time admin account creation
  */
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     const setupForm = document.getElementById('setupForm');
     const usernameInput = document.getElementById('username');
     const passwordInput = document.getElementById('password');
@@ -14,11 +14,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const strengthFill = document.getElementById('strengthFill');
     const strengthText = document.getElementById('strengthText');
 
+    // Wait for AdminAuth to initialize and auto-configure if needed
+    console.log('Setup page: Waiting for AdminAuth initialization...');
+    await AdminAuth.autoSetupDefaultAdmin();
+    await new Promise(resolve => setTimeout(resolve, 200)); // Small delay
+
     // Check if already setup
+    console.log('Setup page: Checking if setup complete...');
     if (AdminAuth.isSetupComplete()) {
+        console.log('Setup page: Credentials found! Redirecting to login...');
         window.location.href = 'login.html';
         return;
     }
+
+    console.log('Setup page: No credentials found, showing setup form');
 
     // Password strength meter
     passwordInput.addEventListener('input', () => {

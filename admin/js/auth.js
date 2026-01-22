@@ -13,7 +13,12 @@ const AdminAuth = {
      * Initialize authentication system
      */
     async init() {
+        // IMPORTANT: Wait for auto-setup to complete before checking anything
         await this.autoSetupDefaultAdmin();
+
+        // Small delay to ensure localStorage is written
+        await this.delay(100);
+
         this.checkFirstTimeSetup();
         this.checkSession();
         this.setupInactivityTimer();
@@ -25,8 +30,11 @@ const AdminAuth = {
     async autoSetupDefaultAdmin() {
         // Check if already set up
         if (this.isSetupComplete()) {
+            console.log('Admin already configured');
             return;
         }
+
+        console.log('Auto-configuring admin credentials...');
 
         // Pre-configured admin credentials
         const defaultUsername = 'Vinson';
@@ -46,8 +54,15 @@ const AdminAuth = {
 
             localStorage.setItem(this.CREDENTIALS_KEY, JSON.stringify(credentials));
 
-            // Log activity
-            this.logActivity('setup', 'Admin account auto-configured');
+            // Verify it was saved
+            const saved = localStorage.getItem(this.CREDENTIALS_KEY);
+            if (saved) {
+                console.log('✅ Admin credentials auto-configured successfully');
+                // Log activity
+                this.logActivity('setup', 'Admin account auto-configured');
+            } else {
+                console.error('❌ Failed to save credentials to localStorage');
+            }
         } catch (error) {
             console.error('Auto-setup failed:', error);
         }
@@ -60,11 +75,19 @@ const AdminAuth = {
         const credentials = localStorage.getItem(this.CREDENTIALS_KEY);
         const currentPage = window.location.pathname;
 
+        console.log('Checking first time setup:', {
+            hasCredentials: !!credentials,
+            currentPage: currentPage
+        });
+
         if (!credentials && !currentPage.includes('setup.html')) {
             // No credentials set, redirect to setup
             if (!currentPage.includes('setup.html') && !currentPage.includes('login.html')) {
+                console.log('No credentials found, redirecting to setup...');
                 window.location.href = 'setup.html';
             }
+        } else if (credentials) {
+            console.log('✅ Credentials found, proceeding...');
         }
     },
 
