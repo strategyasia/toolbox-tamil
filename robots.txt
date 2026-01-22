@@ -1,0 +1,67 @@
+# robots.txt for http://tamilpetti.com
+# Updated: 2024-01-22
+
+# Allow all search engines to crawl the site
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /admin/js/
+Disallow: /admin/css/
+
+# Google Bot
+User-agent: Googlebot
+Allow: /
+Disallow: /admin/
+Crawl-delay: 0
+
+# Google Image Bot
+User-agent: Googlebot-Image
+Allow: /
+Disallow: /admin/
+
+# Bing Bot
+User-agent: Bingbot
+Allow: /
+Disallow: /admin/
+Crawl-delay: 0
+
+# Yandex Bot
+User-agent: Yandex
+Allow: /
+Disallow: /admin/
+Crawl-delay: 1
+
+# Baidu Bot (for China)
+User-agent: Baiduspider
+Allow: /
+Disallow: /admin/
+Crawl-delay: 1
+
+# DuckDuckGo Bot
+User-agent: DuckDuckBot
+Allow: /
+Disallow: /admin/
+
+# Yahoo Bot
+User-agent: Slurp
+Allow: /
+Disallow: /admin/
+
+# Block malicious bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+# Sitemap location
+Sitemap: http://tamilpetti.com/sitemap.xml
+
+# Host preference
+Host: tamilpetti.com
