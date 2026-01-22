@@ -539,9 +539,16 @@
                 <div class="tab-content" id="tab-integrations">
                     <div class="settings-card">
                         <h3>📊 Google Analytics</h3>
+                        <p style="color: #636E72; margin-bottom: 20px;">
+                            Track your website traffic and user behavior. Get your tracking ID from
+                            <a href="https://analytics.google.com/" target="_blank" style="color: #FF6B6B;">Google Analytics</a>.
+                        </p>
                         <div class="form-group">
                             <label for="gaTrackingId">Tracking ID (GA4)</label>
                             <input type="text" id="gaTrackingId" placeholder="G-XXXXXXXXXX">
+                            <small style="color: #636E72; display: block; margin-top: 5px;">
+                                Format: G-XXXXXXXXXX (GA4) or UA-XXXXXXXXX-X (Universal Analytics)
+                            </small>
                         </div>
                         <div class="form-group">
                             <label class="toggle-label">
@@ -549,15 +556,57 @@
                                 <span class="toggle-slider"></span>
                                 <span class="toggle-text">Enable Google Analytics</span>
                             </label>
+                            <small style="color: #636E72; display: block; margin-top: 5px;">
+                                ℹ️ Toggle this ON after entering your tracking ID to start tracking
+                            </small>
+                        </div>
+                        <div style="background: #F8F9FA; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                            <strong style="color: #2D3436;">📋 Setup Steps:</strong>
+                            <ol style="margin: 10px 0; padding-left: 25px; color: #636E72; line-height: 1.8;">
+                                <li>Get tracking ID from <a href="https://analytics.google.com/" target="_blank" style="color: #FF6B6B;">Google Analytics</a></li>
+                                <li>Paste it above and toggle ON</li>
+                                <li>Click "💾 Save All Settings"</li>
+                                <li>Click "View Integration Code" button</li>
+                                <li>Copy and add code to your index.html</li>
+                            </ol>
                         </div>
                     </div>
 
                     <div class="settings-card">
                         <h3>🔍 Google Search Console</h3>
+                        <p style="color: #636E72; margin-bottom: 20px;">
+                            Verify your website ownership to appear in Google search results.
+                            Get verification code from <a href="https://search.google.com/search-console/" target="_blank" style="color: #FF6B6B;">Google Search Console</a>.
+                        </p>
                         <div class="form-group">
                             <label for="gscVerification">Verification Code</label>
-                            <input type="text" id="gscVerification" placeholder="google-site-verification=...">
+                            <input type="text" id="gscVerification" placeholder="Paste verification meta tag or just the code">
+                            <small style="color: #636E72; display: block; margin-top: 5px;">
+                                You can paste either:<br>
+                                • Just the code: <code>abc123def456...</code><br>
+                                • Or the full meta tag: <code>&lt;meta name="google-site-verification" content="..."&gt;</code>
+                            </small>
                         </div>
+                        <div style="background: #F8F9FA; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                            <strong style="color: #2D3436;">📋 Setup Steps:</strong>
+                            <ol style="margin: 10px 0; padding-left: 25px; color: #636E72; line-height: 1.8;">
+                                <li>Go to <a href="https://search.google.com/search-console/" target="_blank" style="color: #FF6B6B;">Google Search Console</a></li>
+                                <li>Add your property (http://tamilpetti.com)</li>
+                                <li>Choose "HTML tag" verification method</li>
+                                <li>Copy the meta tag or just the content code</li>
+                                <li>Paste it above and save settings</li>
+                                <li>Add generated code to index.html</li>
+                                <li>Go back to GSC and click "Verify"</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div class="settings-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+                        <h3 style="color: white;">🚀 Quick Integration</h3>
+                        <p style="opacity: 0.9;">After saving your settings, you'll get ready-to-use code to add to your website.</p>
+                        <button class="btn" onclick="SEOIntegrations.showIntegrationInstructions()" style="background: white; color: #667eea; margin-top: 10px;">
+                            📋 View Integration Code
+                        </button>
                     </div>
                 </div>
 
@@ -652,5 +701,6 @@
 
     <script src="js/auth.js"></script>
     <script src="js/dashboard.js"></script>
+    <script src="js/seo-integrations.js"></script>
 </body>
 </html>
