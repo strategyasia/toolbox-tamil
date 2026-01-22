@@ -546,10 +546,16 @@ body {
     padding: var(--spacing-lg);
     border-radius: 12px;
     box-shadow: var(--shadow);
+    min-height: 350px;
 }
 
 .chart-card h3 {
     margin-bottom: var(--spacing-md);
+}
+
+.chart-card canvas {
+    max-height: 280px !important;
+    width: 100% !important;
 }
 
 /* Activity List */
@@ -745,10 +751,16 @@ body {
     padding: var(--spacing-lg);
     border-radius: 12px;
     box-shadow: var(--shadow);
+    min-height: 350px;
 }
 
 .analytics-card h3 {
     margin-bottom: var(--spacing-md);
+}
+
+.analytics-card canvas {
+    max-height: 280px !important;
+    width: 100% !important;
 }
 
 .device-stats,
