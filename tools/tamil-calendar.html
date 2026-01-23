@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tamil Calendar Converter - Toolbox Tamil</title>
+    <link rel="stylesheet" href="tools-common.css">
+    <style>
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .calendar-section {
+            background: var(--bg-color);
+            padding: 30px;
+            border-radius: 12px;
+        }
+
+        .calendar-header {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .date-input-group {
+            margin-bottom: 20px;
+        }
+
+        .date-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        .date-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+        }
+
+        .tamil-date-display {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid var(--primary-color);
+            margin-top: 20px;
+        }
+
+        .tamil-date-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tamil-date-item:last-child {
+            border-bottom: none;
+        }
+
+        .tamil-date-label {
+            font-size: 14px;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .tamil-date-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-color);
+            font-family: 'Noto Sans Tamil', 'Latha', 'Tamil Sangam MN', sans-serif;
+        }
+
+        .convert-btn {
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .today-btn {
+            background: var(--secondary-color);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .today-btn:hover {
+            background: #45b8af;
+            transform: translateY(-2px);
+        }
+
+        .tamil-months {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .month-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .month-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+
+        .month-tamil {
+            font-family: 'Noto Sans Tamil', 'Latha', 'Tamil Sangam MN', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .month-english {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .info-section {
+            margin-top: 30px;
+            background: rgba(78, 205, 196, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .info-section h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        .info-section p {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .calendar-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tamil-months {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .calendar-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="tool-header">
+        <div class="container">
+            <div class="logo">
+                <span>📅</span>
+                <h1>Tamil Calendar Converter</h1>
+            </div>
+            <a href="../index.html" class="back-btn">← Back to Home</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <section class="tool-section">
+            <h2 class="tool-title">Tamil Calendar Converter</h2>
+            <p class="tool-description">
+                Convert between Gregorian and Tamil calendar dates. View Tamil month, year (திருவள்ளுவர் ஆண்டு), and day information.
+            </p>
+
+            <!-- Calendar Grid -->
+            <div class="calendar-grid">
+                <!-- Gregorian to Tamil -->
+                <div class="calendar-section">
+                    <div class="calendar-header">
+                        <span>📆</span> Gregorian Date
+                    </div>
+
+                    <div class="date-input-group">
+                        <label class="date-label">Select Date:</label>
+                        <input type="date" id="gregorianDate" class="date-input">
+                    </div>
+
+                    <button class="today-btn" id="todayBtn">
+                        Today's Date (இன்றைய தேதி)
+                    </button>
+
+                    <button class="btn btn-primary convert-btn" id="convertBtn">
+                        Convert to Tamil Calendar →
+                    </button>
+                </div>
+
+                <!-- Tamil Calendar Display -->
+                <div class="calendar-section">
+                    <div class="calendar-header">
+                        <span>🗓️</span> Tamil Calendar (தமிழ் நாட்காட்டி)
+                    </div>
+
+                    <div class="tamil-date-display">
+                        <div class="tamil-date-item">
+                            <span class="tamil-date-label">Tamil Year (ஆண்டு):</span>
+                            <span class="tamil-date-value" id="tamilYear">-</span>
+                        </div>
+                        <div class="tamil-date-item">
+                            <span class="tamil-date-label">Tamil Month (மாதம்):</span>
+                            <span class="tamil-date-value" id="tamilMonth">-</span>
+                        </div>
+                        <div class="tamil-date-item">
+                            <span class="tamil-date-label">Date (தேதி):</span>
+                            <span class="tamil-date-value" id="tamilDate">-</span>
+                        </div>
+                        <div class="tamil-date-item">
+                            <span class="tamil-date-label">Day (வாரம்):</span>
+                            <span class="tamil-date-value" id="tamilDay">-</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tamil Months Reference -->
+            <div class="info-section">
+                <h3>Tamil Months (தமிழ் மாதங்கள்)</h3>
+                <div class="tamil-months">
+                    <div class="month-card">
+                        <div class="month-tamil">சித்திரை</div>
+                        <div class="month-english">Chithirai (Apr-May)</div>
+                    </div>
+                    <div class="month-card">
+                        <div class="month-tamil">வைகாசி</div>
+                        <div class="month-english">Vaikaasi (May-Jun)</div>
+                    </div>
+                    <div class="month-card">
+                        <div class="month-tamil">ஆனி</div>
+                        <div class="month-english">Aani (Jun-Jul)</div>
+                    </div>
+                    <div class="month-card">
+                        <div class="month-tamil">ஆடி</div>
+                        <div class="month-english">Aadi (Jul-Aug)</div>
+                    </div>
+                    <div class="month-card">
+                        <div class="month-tamil">ஆவணி</div>
+                        <div class="month-english">Aavani (Aug-Sep)</div>
+                    </div>
+                    <div class="month-card">
+                        <div class="month-tamil">புரட்டாசி</div>
+                        <div class="month-english">Purattasi (Sep-Oct)</div>
+                    </div>
+                    <div class="month-card">
+                        <div class="month-tamil">ஐப்பசி</div>
+                        <div class="month-english">Aippasi (Oct-Nov)</div>
+                    </div>
+                    <div class="month-card">
+                        <div class="month-tamil">கார்த்திகை</div>
+                        <div class="month-english">Karthigai (Nov-Dec)</div>
+                    </div>
+                    <div class="month-card">
+                        <div class="month-tamil">மார்கழி</div>
+                        <div class="month-english">Margazhi (Dec-Jan)</div>
+                    </div>
+                    <div class="month-card">
+                        <div class="month-tamil">தை</div>
+                        <div class="month-english">Thai (Jan-Feb)</div>
+                    </div>
+                    <div class="month-card">
+                        <div class="month-tamil">மாசி</div>
+                        <div class="month-english">Maasi (Feb-Mar)</div>
+                    </div>
+                    <div class="month-card">
+                        <div class="month-tamil">பங்குனி</div>
+                        <div class="month-english">Panguni (Mar-Apr)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info -->
+            <div class="info-section" style="margin-top: 20px;">
+                <h3>About Tamil Calendar</h3>
+                <p>
+                    The Tamil calendar is a sidereal solar calendar used in Tamil Nadu. The Tamil year starts with the month of Chithirai (mid-April).
+                    The calendar follows the Thiruvalluvar year (திருவள்ளுவர் ஆண்டு), which is approximately 31 years ahead of the Gregorian calendar.
+                    The current conversion uses this dating system.
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const gregorianDate = document.getElementById('gregorianDate');
+        const todayBtn = document.getElementById('todayBtn');
+        const convertBtn = document.getElementById('convertBtn');
+        const tamilYear = document.getElementById('tamilYear');
+        const tamilMonth = document.getElementById('tamilMonth');
+        const tamilDate = document.getElementById('tamilDate');
+        const tamilDay = document.getElementById('tamilDay');
+
+        // Tamil months with start dates (approximate)
+        const tamilMonths = [
+            { name: 'சித்திரை', english: 'Chithirai', startMonth: 4, startDay: 14 },
+            { name: 'வைகாசி', english: 'Vaikaasi', startMonth: 5, startDay: 15 },
+            { name: 'ஆனி', english: 'Aani', startMonth: 6, startDay: 15 },
+            { name: 'ஆடி', english: 'Aadi', startMonth: 7, startDay: 17 },
+            { name: 'ஆவணி', english: 'Aavani', startMonth: 8, startDay: 17 },
+            { name: 'புரட்டாசி', english: 'Purattasi', startMonth: 9, startDay: 17 },
+            { name: 'ஐப்பசி', english: 'Aippasi', startMonth: 10, startDay: 18 },
+            { name: 'கார்த்திகை', english: 'Karthigai', startMonth: 11, startDay: 17 },
+            { name: 'மார்கழி', english: 'Margazhi', startMonth: 12, startDay: 16 },
+            { name: 'தை', english: 'Thai', startMonth: 1, startDay: 15 },
+            { name: 'மாசி', english: 'Maasi', startMonth: 2, startDay: 13 },
+            { name: 'பங்குனி', english: 'Panguni', startMonth: 3, startDay: 15 }
+        ];
+
+        // Tamil days
+        const tamilDays = [
+            'ஞாயிறு',      // Sunday
+            'திங்கள்',      // Monday
+            'செவ்வாய்',    // Tuesday
+            'புதன்',        // Wednesday
+            'வியாழன்',      // Thursday
+            'வெள்ளி',      // Friday
+            'சனி'          // Saturday
+        ];
+
+        // Tamil numerals
+        const tamilNumerals = ['௦', '௧', '௨', '௩', '௪', '௫', '௬', '௭', '௮', '௯'];
+
+        function convertToTamilNumeral(num) {
+            return num.toString().split('').map(d => tamilNumerals[parseInt(d)]).join('');
+        }
+
+        function getTamilMonth(date) {
+            const month = date.getMonth() + 1; // 1-12
+            const day = date.getDate();
+
+            for (let i = 0; i < tamilMonths.length; i++) {
+                const tMonth = tamilMonths[i];
+                const nextMonth = tamilMonths[(i + 1) % 12];
+
+                if (month === tMonth.startMonth && day >= tMonth.startDay) {
+                    return { month: tMonth, dayOfMonth: day - tMonth.startDay + 1 };
+                } else if (month === tMonth.startMonth && day < tMonth.startDay) {
+                    const prevMonth = tamilMonths[(i - 1 + 12) % 12];
+                    // Calculate days in previous month
+                    const prevMonthDays = 30; // Simplified
+                    return { month: prevMonth, dayOfMonth: prevMonthDays - (tMonth.startDay - day) + 1 };
+                }
+
+                // Check if date is between this month and next
+                if (month === tMonth.startMonth ||
+                    (month === nextMonth.startMonth && day < nextMonth.startDay)) {
+                    if (month === tMonth.startMonth && day >= tMonth.startDay) {
+                        return { month: tMonth, dayOfMonth: day - tMonth.startDay + 1 };
+                    }
+                }
+            }
+
+            // Default to first month
+            return { month: tamilMonths[0], dayOfMonth: 1 };
+        }
+
+        function convertToTamilCalendar() {
+            const dateValue = gregorianDate.value;
+            if (!dateValue) {
+                alert('Please select a date first!');
+                return;
+            }
+
+            const date = new Date(dateValue);
+            const year = date.getFullYear();
+
+            // Calculate Tamil year (Thiruvalluvar year = Gregorian year + 31)
+            // Note: Tamil year starts in mid-April, so adjust accordingly
+            const month = date.getMonth() + 1;
+            let tamilYearNum = year + 31;
+            if (month < 4 || (month === 4 && date.getDate() < 14)) {
+                tamilYearNum--;
+            }
+
+            // Get Tamil month
+            const tamilMonthInfo = getTamilMonth(date);
+
+            // Get Tamil day
+            const dayOfWeek = date.getDay();
+            const tamilDayName = tamilDays[dayOfWeek];
+
+            // Display results
+            tamilYear.textContent = `${tamilYearNum} (${convertToTamilNumeral(tamilYearNum)})`;
+            tamilMonth.textContent = `${tamilMonthInfo.month.name} (${tamilMonthInfo.month.english})`;
+            tamilDate.textContent = `${tamilMonthInfo.dayOfMonth} (${convertToTamilNumeral(tamilMonthInfo.dayOfMonth)})`;
+            tamilDay.textContent = tamilDayName;
+        }
+
+        function setToday() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            gregorianDate.value = `${year}-${month}-${day}`;
+        }
+
+        // Event listeners
+        convertBtn.addEventListener('click', convertToTamilCalendar);
+        todayBtn.addEventListener('click', () => {
+            setToday();
+            convertToTamilCalendar();
+        });
+
+        // Set today's date by default
+        setToday();
+    </script>
+</body>
+</html>

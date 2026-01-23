@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Picker Tool - Toolbox Tamil</title>
+    <link rel="stylesheet" href="tools-common.css">
+    <style>
+        /* Color Picker Specific Styles */
+        .picker-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .color-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .color-input-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .color-picker-input {
+            width: 100%;
+            height: 200px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .color-picker-input:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .color-picker-label {
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .color-preview-box {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .preview-color {
+            width: 100%;
+            height: 150px;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .color-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .color-format-item {
+            background: var(--bg-color);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .format-label {
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-light);
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .format-value {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-color);
+            word-break: break-all;
+        }
+
+        .copy-btn {
+            background: white;
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-color);
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .copy-btn.copied {
+            background: var(--success-color);
+            color: white;
+            border-color: var(--success-color);
+        }
+
+        /* Palette Section */
+        .palette-section {
+            margin: 40px 0;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+
+        .palette-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+
+        .palette-color {
+            width: 100%;
+            height: 60px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .palette-color:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        /* History Section */
+        .history-section {
+            margin: 40px 0;
+        }
+
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            gap: 12px;
+        }
+
+        .history-color {
+            width: 100%;
+            height: 50px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .history-color:hover {
+            border-color: var(--primary-color);
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .history-empty {
+            color: var(--text-light);
+            font-style: italic;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .clear-history-btn {
+            background: var(--bg-color);
+            color: var(--text-color);
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .clear-history-btn:hover {
+            background: var(--error-color);
+            color: white;
+            border-color: var(--error-color);
+        }
+
+        /* Text input for manual color */
+        .manual-input-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .manual-input-group input {
+            flex: 1;
+        }
+
+        .manual-input-group button {
+            padding: 12px 20px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .manual-input-group button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .picker-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .color-info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .palette-grid {
+                grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            }
+
+            .format-value {
+                font-size: 12px;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .copy-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        .alert-message {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--success-color);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            animation: slideIn 0.3s ease;
+            z-index: 1000;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="tool-header">
+        <div class="container">
+            <div class="logo">
+                <span style="font-size: 28px;">🎨</span>
+                <h1>Color Picker</h1>
+            </div>
+            <a href="../index.html" class="back-btn">← Back to Home</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="container">
+        <section class="tool-section">
+            <h2 class="tool-title">Color Picker Tool</h2>
+            <p class="tool-description">Pick colors and get instant conversion to multiple formats including HEX, RGB, HSL, and HSV</p>
+
+            <!-- Color Picker Container -->
+            <div class="picker-container">
+                <!-- Left: Input Section -->
+                <div class="color-input-group">
+                    <div class="color-input-wrapper">
+                        <label class="color-picker-label">Pick a Color</label>
+                        <input type="color" id="colorInput" class="color-picker-input" value="#FF6B6B">
+                    </div>
+
+                    <div class="manual-input-group">
+                        <input type="text" id="manualColorInput" placeholder="Enter HEX, RGB, or HSL (e.g., #FF6B6B)">
+                        <button onclick="applyManualColor()">Apply</button>
+                    </div>
+                </div>
+
+                <!-- Right: Preview & Formats -->
+                <div class="color-preview-box">
+                    <div class="color-input-wrapper">
+                        <label class="color-picker-label">Preview</label>
+                        <div class="preview-color" id="previewColor"></div>
+                    </div>
+
+                    <div class="color-info-grid">
+                        <!-- HEX Format -->
+                        <div class="color-format-item">
+                            <div class="format-label">HEX</div>
+                            <div class="format-value">
+                                <span id="hexValue">#FF6B6B</span>
+                                <button class="copy-btn" onclick="copyToClipboard('hexValue', this)">Copy</button>
+                            </div>
+                        </div>
+
+                        <!-- RGB Format -->
+                        <div class="color-format-item">
+                            <div class="format-label">RGB</div>
+                            <div class="format-value">
+                                <span id="rgbValue">rgb(255, 107, 107)</span>
+                                <button class="copy-btn" onclick="copyToClipboard('rgbValue', this)">Copy</button>
+                            </div>
+                        </div>
+
+                        <!-- HSL Format -->
+                        <div class="color-format-item">
+                            <div class="format-label">HSL</div>
+                            <div class="format-value">
+                                <span id="hslValue">hsl(0, 100%, 71%)</span>
+                                <button class="copy-btn" onclick="copyToClipboard('hslValue', this)">Copy</button>
+                            </div>
+                        </div>
+
+                        <!-- HSV Format -->
+                        <div class="color-format-item">
+                            <div class="format-label">HSV</div>
+                            <div class="format-value">
+                                <span id="hsvValue">hsv(0, 58%, 100%)</span>
+                                <button class="copy-btn" onclick="copyToClipboard('hsvValue', this)">Copy</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Palette Section -->
+            <div class="palette-section">
+                <h3 class="section-title">Popular Color Palette</h3>
+                <div class="palette-grid" id="paletteGrid"></div>
+            </div>
+
+            <!-- History Section -->
+            <div class="history-section">
+                <h3 class="section-title">Recently Picked Colors</h3>
+                <div class="history-grid" id="historyGrid"></div>
+                <button class="clear-history-btn" onclick="clearHistory()">Clear History</button>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="tool-section">
+            <h3 class="tool-title">Features</h3>
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">🎨</div>
+                    <div class="feature-text">
+                        <h3>Color Input</h3>
+                        <p>Pick any color using the native color picker</p>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📋</div>
+                    <div class="feature-text">
+                        <h3>Instant Conversion</h3>
+                        <p>Get HEX, RGB, HSL, and HSV formats instantly</p>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📋</div>
+                    <div class="feature-text">
+                        <h3>Copy to Clipboard</h3>
+                        <p>One-click copy for each color format</p>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🌈</div>
+                    <div class="feature-text">
+                        <h3>Pre-made Palettes</h3>
+                        <p>Choose from curated color palettes</p>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⏱️</div>
+                    <div class="feature-text">
+                        <h3>Pick History</h3>
+                        <p>Keep track of your recently picked colors</p>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">📱</div>
+                    <div class="feature-text">
+                        <h3>Mobile Responsive</h3>
+                        <p>Works perfectly on all devices</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="tool-footer">
+        <p>&copy; 2026 Toolbox Tamil. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Pre-made Palettes
+        const palettes = {
+            vibrant: [
+                '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
+                '#F7DC6F', '#BB8FCE', '#85C1E2', '#F8B88B', '#BDC581'
+            ],
+            pastel: [
+                '#FFB3BA', '#FFCCCB', '#FFFFBA', '#BAE1FF', '#FFD4E5',
+                '#C1FFC1', '#FFE5CC', '#E0BBE4', '#C7CEEA', '#B5EAD7'
+            ],
+            dark: [
+                '#2C3E50', '#34495E', '#7F8C8D', '#95A5A6', '#1ABC9C',
+                '#16A085', '#27AE60', '#2980B9', '#8E44AD', '#C0392B'
+            ],
+            muted: [
+                '#967B6D', '#867E77', '#8B7B7F', '#9B8D8E', '#B5A7AA',
+                '#C5A9B4', '#8B7B6D', '#9B8D7F', '#A59B92', '#B5A7A1'
+            ]
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            const colorInput = document.getElementById('colorInput');
+
+            // Initialize with default color
+            updateColor(colorInput.value);
+
+            // Listen to color input changes
+            colorInput.addEventListener('input', function() {
+                updateColor(this.value);
+                addToHistory(this.value);
+            });
+
+            // Initialize palette
+            initializePalette();
+
+            // Load history from localStorage
+            loadHistory();
+        });
+
+        function updateColor(hexColor) {
+            const hex = hexColor.toUpperCase();
+
+            // Update preview
+            document.getElementById('previewColor').style.backgroundColor = hex;
+
+            // Update HEX
+            document.getElementById('hexValue').textContent = hex;
+
+            // Convert to RGB
+            const rgb = hexToRgb(hex);
+            document.getElementById('rgbValue').textContent = `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+
+            // Convert to HSL
+            const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+            document.getElementById('hslValue').textContent = `hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`;
+
+            // Convert to HSV
+            const hsv = rgbToHsv(rgb.r, rgb.g, rgb.b);
+            document.getElementById('hsvValue').textContent = `hsv(${hsv.h}, ${hsv.s}%, ${hsv.v}%)`;
+
+            // Update color input
+            document.getElementById('colorInput').value = hex;
+            document.getElementById('manualColorInput').value = hex;
+        }
+
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : { r: 0, g: 0, b: 0 };
+        }
+
+        function rgbToHsl(r, g, b) {
+            r /= 255;
+            g /= 255;
+            b /= 255;
+
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+
+            if (max === min) {
+                h = s = 0;
+            } else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+
+                switch (max) {
+                    case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+                    case g: h = ((b - r) / d + 2) / 6; break;
+                    case b: h = ((r - g) / d + 4) / 6; break;
+                }
+            }
+
+            return {
+                h: Math.round(h * 360),
+                s: Math.round(s * 100),
+                l: Math.round(l * 100)
+            };
+        }
+
+        function rgbToHsv(r, g, b) {
+            r /= 255;
+            g /= 255;
+            b /= 255;
+
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            const d = max - min;
+
+            let h, s = max === 0 ? 0 : d / max;
+            let v = max;
+
+            if (max === min) {
+                h = 0;
+            } else {
+                switch (max) {
+                    case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+                    case g: h = ((b - r) / d + 2) / 6; break;
+                    case b: h = ((r - g) / d + 4) / 6; break;
+                }
+            }
+
+            return {
+                h: Math.round(h * 360),
+                s: Math.round(s * 100),
+                v: Math.round(v * 100)
+            };
+        }
+
+        function copyToClipboard(elementId, button) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
+
+            navigator.clipboard.writeText(text).then(() => {
+                // Show feedback
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.classList.add('copied');
+
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+
+                // Show alert
+                showAlert('Copied to clipboard!');
+            }).catch(err => {
+                showAlert('Failed to copy', 'error');
+            });
+        }
+
+        function showAlert(message, type = 'success') {
+            const alert = document.createElement('div');
+            alert.className = 'alert-message';
+            alert.textContent = message;
+            document.body.appendChild(alert);
+
+            setTimeout(() => {
+                alert.remove();
+            }, 3000);
+        }
+
+        function initializePalette() {
+            const grid = document.getElementById('paletteGrid');
+            grid.innerHTML = '';
+
+            // Use vibrant palette
+            palettes.vibrant.forEach(color => {
+                const colorDiv = document.createElement('div');
+                colorDiv.className = 'palette-color';
+                colorDiv.style.backgroundColor = color;
+                colorDiv.title = color;
+                colorDiv.onclick = () => {
+                    updateColor(color);
+                    addToHistory(color);
+                };
+                grid.appendChild(colorDiv);
+            });
+        }
+
+        function addToHistory(color) {
+            let history = JSON.parse(localStorage.getItem('colorHistory') || '[]');
+
+            // Remove duplicates and add to front
+            history = history.filter(c => c !== color);
+            history.unshift(color);
+
+            // Keep only last 20 colors
+            history = history.slice(0, 20);
+
+            localStorage.setItem('colorHistory', JSON.stringify(history));
+            renderHistory();
+        }
+
+        function loadHistory() {
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const grid = document.getElementById('historyGrid');
+            const history = JSON.parse(localStorage.getItem('colorHistory') || '[]');
+
+            grid.innerHTML = '';
+
+            if (history.length === 0) {
+                grid.innerHTML = '<div class="history-empty">No colors picked yet</div>';
+                return;
+            }
+
+            history.forEach(color => {
+                const colorDiv = document.createElement('div');
+                colorDiv.className = 'history-color';
+                colorDiv.style.backgroundColor = color;
+                colorDiv.title = color;
+                colorDiv.onclick = () => {
+                    updateColor(color);
+                };
+                grid.appendChild(colorDiv);
+            });
+        }
+
+        function clearHistory() {
+            if (confirm('Are you sure you want to clear the color history?')) {
+                localStorage.removeItem('colorHistory');
+                renderHistory();
+                showAlert('History cleared!');
+            }
+        }
+
+        function applyManualColor() {
+            const input = document.getElementById('manualColorInput').value.trim();
+
+            try {
+                let hex;
+
+                // Try to parse as HEX
+                if (input.startsWith('#')) {
+                    hex = input.toUpperCase();
+                    if (!/^#[0-9A-F]{6}$/i.test(hex)) {
+                        throw new Error('Invalid HEX color');
+                    }
+                }
+                // Try to parse as RGB
+                else if (input.startsWith('rgb')) {
+                    const matches = input.match(/\d+/g);
+                    if (matches && matches.length >= 3) {
+                        const r = parseInt(matches[0]);
+                        const g = parseInt(matches[1]);
+                        const b = parseInt(matches[2]);
+                        hex = '#' + [r, g, b].map(x => {
+                            const hex = x.toString(16);
+                            return hex.length === 1 ? '0' + hex : hex;
+                        }).join('').toUpperCase();
+                    } else {
+                        throw new Error('Invalid RGB format');
+                    }
+                }
+                // Try to parse as HSL
+                else if (input.startsWith('hsl')) {
+                    const matches = input.match(/\d+/g);
+                    if (matches && matches.length >= 3) {
+                        const h = parseInt(matches[0]);
+                        const s = parseInt(matches[1]);
+                        const l = parseInt(matches[2]);
+                        hex = hslToHex(h, s, l);
+                    } else {
+                        throw new Error('Invalid HSL format');
+                    }
+                }
+                else {
+                    throw new Error('Invalid color format. Use HEX, RGB, or HSL');
+                }
+
+                updateColor(hex);
+                addToHistory(hex);
+                showAlert('Color applied!');
+            } catch (error) {
+                showAlert(error.message, 'error');
+            }
+        }
+
+        function hslToHex(h, s, l) {
+            s /= 100;
+            l /= 100;
+
+            const c = (1 - Math.abs(2 * l - 1)) * s;
+            const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+            const m = l - c / 2;
+
+            let r, g, b;
+
+            if (h >= 0 && h < 60) {
+                r = c; g = x; b = 0;
+            } else if (h >= 60 && h < 120) {
+                r = x; g = c; b = 0;
+            } else if (h >= 120 && h < 180) {
+                r = 0; g = c; b = x;
+            } else if (h >= 180 && h < 240) {
+                r = 0; g = x; b = c;
+            } else if (h >= 240 && h < 300) {
+                r = x; g = 0; b = c;
+            } else {
+                r = c; g = 0; b = x;
+            }
+
+            const toHex = (value) => {
+                const hex = Math.round((value + m) * 255).toString(16);
+                return hex.length === 1 ? '0' + hex : hex;
+            };
+
+            return '#' + toHex(r) + toHex(g) + toHex(b);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tamil Unicode Converter - Toolbox Tamil</title>
+    <link rel="stylesheet" href="tools-common.css">
+    <style>
+        .converter-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .converter-section {
+            background: var(--bg-color);
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .section-label {
+            font-weight: 600;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .encoding-select {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+
+        #inputText, #outputText {
+            min-height: 300px;
+            font-size: 18px;
+            line-height: 1.6;
+            font-family: 'Noto Sans Tamil', 'Latha', 'Tamil Sangam MN', sans-serif;
+        }
+
+        #outputText {
+            background: white;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .info-box {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid var(--warning-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .info-box h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+
+        .info-box p {
+            font-size: 13px;
+            color: var(--text-light);
+            line-height: 1.5;
+        }
+
+        .encoding-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .encoding-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .encoding-card h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        .encoding-card p {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        @media (max-width: 768px) {
+            .converter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            #inputText, #outputText {
+                min-height: 200px;
+                font-size: 16px;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="tool-header">
+        <div class="container">
+            <div class="logo">
+                <span>🔄</span>
+                <h1>Tamil Unicode Converter</h1>
+            </div>
+            <a href="../index.html" class="back-btn">← Back to Home</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <section class="tool-section">
+            <h2 class="tool-title">Tamil Unicode Converter</h2>
+            <p class="tool-description">
+                Convert Tamil text between different encodings: Unicode, TAM, TSCII, and BAMINI formats.
+            </p>
+
+            <!-- Converter Grid -->
+            <div class="converter-grid">
+                <!-- Input Section -->
+                <div class="converter-section">
+                    <div class="section-header">
+                        <div class="section-label">
+                            <span>📥</span> Input Text
+                        </div>
+                        <select id="inputEncoding" class="encoding-select">
+                            <option value="unicode">Unicode</option>
+                            <option value="tam">TAM</option>
+                            <option value="tscii">TSCII</option>
+                            <option value="bamini">BAMINI</option>
+                        </select>
+                    </div>
+                    <textarea
+                        id="inputText"
+                        placeholder="உங்கள் உரையை இங்கே ஒட்டவும்..."
+                    ></textarea>
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary" id="clearBtn">
+                            <span>🗑️</span> Clear
+                        </button>
+                        <button class="btn btn-secondary" id="swapBtn">
+                            <span>🔄</span> Swap
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Output Section -->
+                <div class="converter-section">
+                    <div class="section-header">
+                        <div class="section-label">
+                            <span>📤</span> Output Text
+                        </div>
+                        <select id="outputEncoding" class="encoding-select">
+                            <option value="unicode" selected>Unicode</option>
+                            <option value="tam">TAM</option>
+                            <option value="tscii">TSCII</option>
+                            <option value="bamini">BAMINI</option>
+                        </select>
+                    </div>
+                    <textarea
+                        id="outputText"
+                        placeholder="Converted text will appear here..."
+                        readonly
+                    ></textarea>
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" id="copyBtn">
+                            <span>📋</span> Copy
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Box -->
+            <div class="info-box">
+                <h3>About Tamil Encodings</h3>
+                <p>
+                    This tool helps convert Tamil text between different legacy encodings and Unicode.
+                    Unicode is the modern standard and recommended for all new applications.
+                </p>
+            </div>
+
+            <!-- Encoding Information -->
+            <div class="encoding-info">
+                <div class="encoding-card">
+                    <h4>Unicode</h4>
+                    <p>Modern standard encoding. Compatible with all platforms and recommended for new content.</p>
+                </div>
+                <div class="encoding-card">
+                    <h4>TAM</h4>
+                    <p>Traditional Tamil encoding used in older Tamil websites and documents.</p>
+                </div>
+                <div class="encoding-card">
+                    <h4>TSCII</h4>
+                    <p>Tamil Script Code for Information Interchange. Legacy 8-bit encoding.</p>
+                </div>
+                <div class="encoding-card">
+                    <h4>BAMINI</h4>
+                    <p>Popular font encoding used in desktop publishing and printing.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Copy Notification -->
+    <div class="copy-notification" id="copyNotification">
+        ✓ Copied to clipboard!
+    </div>
+
+    <script>
+        const inputText = document.getElementById('inputText');
+        const outputText = document.getElementById('outputText');
+        const inputEncoding = document.getElementById('inputEncoding');
+        const outputEncoding = document.getElementById('outputEncoding');
+        const copyBtn = document.getElementById('copyBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const swapBtn = document.getElementById('swapBtn');
+        const copyNotification = document.getElementById('copyNotification');
+
+        // Basic Unicode Tamil character ranges
+        const tamilUnicodeStart = 0x0B80;
+        const tamilUnicodeEnd = 0x0BFF;
+
+        // Simplified conversion mappings (for demonstration)
+        // In a production environment, you'd use comprehensive conversion tables
+        const unicodeToTAM = {
+            'அ': 'a', 'ஆ': 'A', 'இ': 'i', 'ஈ': 'I', 'உ': 'u', 'ஊ': 'U',
+            'எ': 'e', 'ஏ': 'E', 'ஐ': 'ai', 'ஒ': 'o', 'ஓ': 'O', 'ஔ': 'au',
+            'க': 'k', 'ங': 'q', 'ச': 's', 'ஞ': 'Q', 'ட': 't', 'ண': 'N',
+            'த': 'w', 'ந': 'n', 'ப': 'p', 'ம': 'm', 'ய': 'y', 'ர': 'r',
+            'ல': 'l', 'வ': 'v', 'ழ': 'z', 'ள': 'L', 'ற': 'R', 'ன': 'x',
+            '்': '்', 'ா': 'A', 'ி': 'i', 'ீ': 'I', 'ு': 'u', 'ூ': 'U',
+            'ெ': 'e', 'ே': 'E', 'ை': 'Y', 'ொ': 'o', 'ோ': 'O', 'ௌ': 'V'
+        };
+
+        // Reverse mapping
+        const tamToUnicode = {};
+        for (let key in unicodeToTAM) {
+            tamToUnicode[unicodeToTAM[key]] = key;
+        }
+
+        function convertText() {
+            const text = inputText.value;
+            const fromEncoding = inputEncoding.value;
+            const toEncoding = outputEncoding.value;
+
+            if (!text.trim()) {
+                outputText.value = '';
+                return;
+            }
+
+            let result = '';
+
+            // If both encodings are the same, just copy
+            if (fromEncoding === toEncoding) {
+                result = text;
+            }
+            // Convert from Unicode to TAM
+            else if (fromEncoding === 'unicode' && toEncoding === 'tam') {
+                for (let char of text) {
+                    result += unicodeToTAM[char] || char;
+                }
+            }
+            // Convert from TAM to Unicode
+            else if (fromEncoding === 'tam' && toEncoding === 'unicode') {
+                for (let char of text) {
+                    result += tamToUnicode[char] || char;
+                }
+            }
+            // For TSCII and BAMINI (simplified - would need actual conversion tables)
+            else if (toEncoding === 'tscii' || fromEncoding === 'tscii') {
+                result = text + ' [TSCII conversion requires additional library]';
+            }
+            else if (toEncoding === 'bamini' || fromEncoding === 'bamini') {
+                result = text + ' [BAMINI conversion requires additional library]';
+            }
+            else {
+                // Multi-step conversion through Unicode
+                let intermediate = text;
+
+                // First convert to Unicode if needed
+                if (fromEncoding === 'tam') {
+                    intermediate = '';
+                    for (let char of text) {
+                        intermediate += tamToUnicode[char] || char;
+                    }
+                }
+
+                // Then convert to target encoding
+                result = intermediate;
+                if (toEncoding === 'tam') {
+                    result = '';
+                    for (let char of intermediate) {
+                        result += unicodeToTAM[char] || char;
+                    }
+                }
+            }
+
+            outputText.value = result;
+        }
+
+        function copyToClipboard() {
+            const text = outputText.value;
+            if (text.trim().length === 0) {
+                return;
+            }
+
+            navigator.clipboard.writeText(text).then(() => {
+                copyNotification.classList.add('show');
+                setTimeout(() => {
+                    copyNotification.classList.remove('show');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+            });
+        }
+
+        function clearAll() {
+            inputText.value = '';
+            outputText.value = '';
+            inputText.focus();
+        }
+
+        function swapEncodings() {
+            // Swap the input and output
+            const tempText = outputText.value;
+            const tempEncoding = outputEncoding.value;
+
+            inputText.value = tempText;
+            inputEncoding.value = tempEncoding;
+
+            outputEncoding.value = inputEncoding.value === 'unicode' ? 'tam' : 'unicode';
+
+            convertText();
+        }
+
+        // Event listeners
+        inputText.addEventListener('input', convertText);
+        inputText.addEventListener('paste', () => setTimeout(convertText, 0));
+        inputEncoding.addEventListener('change', convertText);
+        outputEncoding.addEventListener('change', convertText);
+        copyBtn.addEventListener('click', copyToClipboard);
+        clearBtn.addEventListener('click', clearAll);
+        swapBtn.addEventListener('click', swapEncodings);
+
+        // Focus on input
+        inputText.focus();
+    </script>
+</body>
+</html>

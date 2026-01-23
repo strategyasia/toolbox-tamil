@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Counter - Toolbox Tamil</title>
+    <link rel="stylesheet" href="tools-common.css">
+    <style>
+        /* Word Counter Specific Styles */
+        .textarea-wrapper {
+            position: relative;
+        }
+
+        #textInput {
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 15px;
+            line-height: 1.8;
+            padding: 16px;
+            resize: vertical;
+            min-height: 400px;
+        }
+
+        .input-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .btn-secondary {
+            background: var(--border-color);
+            color: var(--text-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(78, 205, 196, 0.1) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            font-family: 'Monaco', monospace;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-light);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state-text {
+            font-size: 16px;
+            color: var(--text-light);
+        }
+
+        .copy-notification {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--success-color);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            animation: slideIn 0.3s ease;
+            font-weight: 500;
+            z-index: 1000;
+            display: none;
+        }
+
+        .copy-notification.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            #textInput {
+                min-height: 300px;
+                font-size: 14px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stat-card {
+                padding: 20px;
+            }
+
+            .stat-value {
+                font-size: 28px;
+            }
+
+            .btn {
+                min-width: 100px;
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+
+            .input-actions {
+                gap: 8px;
+            }
+
+            .copy-notification {
+                bottom: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .input-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="tool-header">
+        <div class="container">
+            <div class="logo">
+                <span>📊</span>
+                <h1>Word Counter</h1>
+            </div>
+            <a href="../../index.html" class="back-btn">← Back to Home</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <section class="tool-section">
+            <h2 class="tool-title">Word Counter</h2>
+            <p class="tool-description">
+                Count words, characters, sentences, paragraphs, and get estimated reading time in real-time.
+            </p>
+
+            <!-- Text Input -->
+            <div class="textarea-wrapper">
+                <textarea
+                    id="textInput"
+                    placeholder="Paste or type your text here... Start typing to see instant statistics!"
+                ></textarea>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="input-actions">
+                <button class="btn btn-primary" id="copyBtn">
+                    <span>📋</span> Copy Text
+                </button>
+                <button class="btn btn-secondary" id="clearBtn">
+                    <span>🗑️</span> Clear All
+                </button>
+            </div>
+
+            <!-- Empty State or Stats -->
+            <div id="emptyState" class="empty-state">
+                <div class="empty-state-icon">📝</div>
+                <div class="empty-state-text">Start typing to see statistics...</div>
+            </div>
+
+            <!-- Statistics -->
+            <div id="statsContainer" style="display: none;">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="wordCount">0</div>
+                        <div class="stat-label">Words</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="charCount">0</div>
+                        <div class="stat-label">Characters</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="charCountNoSpaces">0</div>
+                        <div class="stat-label">Characters (no spaces)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="sentenceCount">0</div>
+                        <div class="stat-label">Sentences</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="paragraphCount">0</div>
+                        <div class="stat-label">Paragraphs</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="readingTime">0m</div>
+                        <div class="stat-label">Reading Time</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Copy Notification -->
+    <div class="copy-notification" id="copyNotification">
+        ✓ Text copied to clipboard!
+    </div>
+
+    <script>
+        const textInput = document.getElementById('textInput');
+        const wordCountEl = document.getElementById('wordCount');
+        const charCountEl = document.getElementById('charCount');
+        const charCountNoSpacesEl = document.getElementById('charCountNoSpaces');
+        const sentenceCountEl = document.getElementById('sentenceCount');
+        const paragraphCountEl = document.getElementById('paragraphCount');
+        const readingTimeEl = document.getElementById('readingTime');
+        const copyBtn = document.getElementById('copyBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const emptyState = document.getElementById('emptyState');
+        const statsContainer = document.getElementById('statsContainer');
+        const copyNotification = document.getElementById('copyNotification');
+
+        // Calculate statistics
+        function calculateStats(text) {
+            // Word count
+            const words = text.trim().length > 0 ? text.trim().split(/\s+/).length : 0;
+
+            // Character count (with spaces)
+            const characters = text.length;
+
+            // Character count (without spaces)
+            const charactersNoSpaces = text.replace(/\s/g, '').length;
+
+            // Sentence count
+            const sentences = text.trim().length > 0
+                ? text.split(/[.!?]+/).filter(s => s.trim().length > 0).length
+                : 0;
+
+            // Paragraph count
+            const paragraphs = text.trim().length > 0
+                ? text.split(/\n\n+/).filter(p => p.trim().length > 0).length
+                : 0;
+
+            // Reading time (average 200 words per minute)
+            const readingTime = Math.ceil(words / 200) || 0;
+            const readingTimeText = readingTime === 0 ? 'less than 1m' : `${readingTime}m`;
+
+            return {
+                words,
+                characters,
+                charactersNoSpaces,
+                sentences,
+                paragraphs,
+                readingTime: readingTimeText
+            };
+        }
+
+        // Update display
+        function updateStats() {
+            const text = textInput.value;
+            const stats = calculateStats(text);
+
+            wordCountEl.textContent = stats.words;
+            charCountEl.textContent = stats.characters;
+            charCountNoSpacesEl.textContent = stats.charactersNoSpaces;
+            sentenceCountEl.textContent = stats.sentences;
+            paragraphCountEl.textContent = stats.paragraphs;
+            readingTimeEl.textContent = stats.readingTime;
+
+            // Toggle empty state
+            if (text.trim().length === 0) {
+                emptyState.style.display = 'block';
+                statsContainer.style.display = 'none';
+            } else {
+                emptyState.style.display = 'none';
+                statsContainer.style.display = 'block';
+            }
+        }
+
+        // Copy text to clipboard
+        function copyText() {
+            const text = textInput.value;
+            if (text.trim().length === 0) {
+                return;
+            }
+
+            navigator.clipboard.writeText(text).then(() => {
+                // Show notification
+                copyNotification.classList.add('show');
+                setTimeout(() => {
+                    copyNotification.classList.remove('show');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+            });
+        }
+
+        // Clear all text
+        function clearText() {
+            textInput.value = '';
+            updateStats();
+            textInput.focus();
+        }
+
+        // Event listeners
+        textInput.addEventListener('input', updateStats);
+        textInput.addEventListener('change', updateStats);
+        textInput.addEventListener('paste', () => {
+            setTimeout(updateStats, 0);
+        });
+
+        copyBtn.addEventListener('click', copyText);
+        clearBtn.addEventListener('click', clearText);
+
+        // Initial state
+        updateStats();
+        textInput.focus();
+    </script>
+</body>
+</html>

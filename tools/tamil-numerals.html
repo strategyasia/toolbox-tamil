@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tamil Numerals Converter - Toolbox Tamil</title>
+    <link rel="stylesheet" href="tools-common.css">
+    <style>
+        .converter-wrapper {
+            margin-top: 30px;
+        }
+
+        .conversion-mode {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+
+        .mode-btn {
+            flex: 1;
+            max-width: 300px;
+            padding: 15px 30px;
+            border: 2px solid var(--border-color);
+            background: white;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--text-color);
+        }
+
+        .mode-btn.active {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+        }
+
+        .converter-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .converter-section {
+            background: var(--bg-color);
+            padding: 25px;
+            border-radius: 12px;
+        }
+
+        .section-label {
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 16px;
+        }
+
+        .number-input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 32px;
+            text-align: center;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .number-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+        }
+
+        .tamil-input {
+            font-family: 'Noto Sans Tamil', 'Latha', 'Tamil Sangam MN', sans-serif;
+        }
+
+        .arabic-input {
+            font-family: 'Monaco', 'Courier New', monospace;
+        }
+
+        .output-display {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid var(--primary-color);
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 42px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .tamil-output {
+            font-family: 'Noto Sans Tamil', 'Latha', 'Tamil Sangam MN', sans-serif;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .btn {
+            flex: 1;
+        }
+
+        .reference-section {
+            margin-top: 30px;
+            background: rgba(78, 205, 196, 0.1);
+            padding: 25px;
+            border-radius: 12px;
+        }
+
+        .reference-section h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+
+        .numerals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+        }
+
+        .numeral-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .numeral-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .numeral-tamil {
+            font-family: 'Noto Sans Tamil', 'Latha', 'Tamil Sangam MN', sans-serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .numeral-arabic {
+            font-size: 18px;
+            color: var(--text-light);
+            font-weight: 600;
+        }
+
+        .info-box {
+            margin-top: 20px;
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid var(--warning-color);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .info-box p {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .converter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .conversion-mode {
+                flex-direction: column;
+            }
+
+            .mode-btn {
+                max-width: 100%;
+            }
+
+            .number-input {
+                font-size: 24px;
+            }
+
+            .output-display {
+                font-size: 32px;
+            }
+
+            .numerals-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="tool-header">
+        <div class="container">
+            <div class="logo">
+                <span>🔢</span>
+                <h1>Tamil Numerals Converter</h1>
+            </div>
+            <a href="../index.html" class="back-btn">← Back to Home</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <section class="tool-section">
+            <h2 class="tool-title">Tamil Numerals Converter</h2>
+            <p class="tool-description">
+                Convert numbers between Arabic numerals (0-9) and Tamil numerals (௦-௯). Enter a number in either format.
+            </p>
+
+            <!-- Conversion Mode Toggle -->
+            <div class="converter-wrapper">
+                <div class="conversion-mode">
+                    <button class="mode-btn active" id="arabicToTamilBtn">
+                        Arabic → Tamil
+                    </button>
+                    <button class="mode-btn" id="tamilToArabicBtn">
+                        Tamil → Arabic
+                    </button>
+                </div>
+
+                <!-- Converter Grid -->
+                <div class="converter-grid">
+                    <!-- Input Section -->
+                    <div class="converter-section">
+                        <div class="section-label">
+                            <span>📝</span> <span id="inputLabel">Enter Arabic Number</span>
+                        </div>
+                        <input
+                            type="text"
+                            id="numberInput"
+                            class="number-input arabic-input"
+                            placeholder="123"
+                        >
+                        <div class="action-buttons">
+                            <button class="btn btn-secondary" id="clearBtn">
+                                <span>🗑️</span> Clear
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Output Section -->
+                    <div class="converter-section">
+                        <div class="section-label">
+                            <span>✨</span> <span id="outputLabel">Tamil Numerals</span>
+                        </div>
+                        <div id="output" class="output-display tamil-output">-</div>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" id="copyBtn">
+                                <span>📋</span> Copy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Numerals Reference -->
+            <div class="reference-section">
+                <h3>Tamil Numerals Reference (தமிழ் எண்கள்)</h3>
+                <div class="numerals-grid">
+                    <div class="numeral-card">
+                        <div class="numeral-tamil">௦</div>
+                        <div class="numeral-arabic">0</div>
+                    </div>
+                    <div class="numeral-card">
+                        <div class="numeral-tamil">௧</div>
+                        <div class="numeral-arabic">1</div>
+                    </div>
+                    <div class="numeral-card">
+                        <div class="numeral-tamil">௨</div>
+                        <div class="numeral-arabic">2</div>
+                    </div>
+                    <div class="numeral-card">
+                        <div class="numeral-tamil">௩</div>
+                        <div class="numeral-arabic">3</div>
+                    </div>
+                    <div class="numeral-card">
+                        <div class="numeral-tamil">௪</div>
+                        <div class="numeral-arabic">4</div>
+                    </div>
+                    <div class="numeral-card">
+                        <div class="numeral-tamil">௫</div>
+                        <div class="numeral-arabic">5</div>
+                    </div>
+                    <div class="numeral-card">
+                        <div class="numeral-tamil">௬</div>
+                        <div class="numeral-arabic">6</div>
+                    </div>
+                    <div class="numeral-card">
+                        <div class="numeral-tamil">௭</div>
+                        <div class="numeral-arabic">7</div>
+                    </div>
+                    <div class="numeral-card">
+                        <div class="numeral-tamil">௮</div>
+                        <div class="numeral-arabic">8</div>
+                    </div>
+                    <div class="numeral-card">
+                        <div class="numeral-tamil">௯</div>
+                        <div class="numeral-arabic">9</div>
+                    </div>
+                    <div class="numeral-card">
+                        <div class="numeral-tamil">௰</div>
+                        <div class="numeral-arabic">10</div>
+                    </div>
+                    <div class="numeral-card">
+                        <div class="numeral-tamil">௱</div>
+                        <div class="numeral-arabic">100</div>
+                    </div>
+                    <div class="numeral-card">
+                        <div class="numeral-tamil">௲</div>
+                        <div class="numeral-arabic">1000</div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <p>
+                        Tamil numerals are part of the Tamil script and are used to represent numbers 0-9.
+                        Special symbols exist for 10 (௰), 100 (௱), and 1000 (௲). This converter handles
+                        digit-by-digit conversion for numbers of any length.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Copy Notification -->
+    <div class="copy-notification" id="copyNotification">
+        ✓ Copied to clipboard!
+    </div>
+
+    <script>
+        const numberInput = document.getElementById('numberInput');
+        const output = document.getElementById('output');
+        const arabicToTamilBtn = document.getElementById('arabicToTamilBtn');
+        const tamilToArabicBtn = document.getElementById('tamilToArabicBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const inputLabel = document.getElementById('inputLabel');
+        const outputLabel = document.getElementById('outputLabel');
+        const copyNotification = document.getElementById('copyNotification');
+
+        let currentMode = 'arabicToTamil';
+
+        // Tamil numerals mapping
+        const tamilNumerals = ['௦', '௧', '௨', '௩', '௪', '௫', '௬', '௭', '௮', '௯'];
+        const arabicNumerals = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+
+        // Create reverse mapping
+        const tamilToArabicMap = {};
+        tamilNumerals.forEach((tamil, index) => {
+            tamilToArabicMap[tamil] = arabicNumerals[index];
+        });
+
+        function arabicToTamil(num) {
+            return num.toString().split('').map(digit => {
+                const index = arabicNumerals.indexOf(digit);
+                return index !== -1 ? tamilNumerals[index] : digit;
+            }).join('');
+        }
+
+        function tamilToArabic(tamilNum) {
+            return tamilNum.split('').map(char => {
+                return tamilToArabicMap[char] || char;
+            }).join('');
+        }
+
+        function convert() {
+            const input = numberInput.value.trim();
+
+            if (!input) {
+                output.textContent = '-';
+                return;
+            }
+
+            let result;
+
+            if (currentMode === 'arabicToTamil') {
+                // Validate Arabic numerals
+                if (!/^[0-9]+$/.test(input)) {
+                    output.textContent = 'Invalid input';
+                    return;
+                }
+                result = arabicToTamil(input);
+                output.classList.add('tamil-output');
+                output.classList.remove('arabic-input');
+            } else {
+                // Convert Tamil to Arabic
+                result = tamilToArabic(input);
+                // Validate result
+                if (!/^[0-9]+$/.test(result)) {
+                    output.textContent = 'Invalid input';
+                    return;
+                }
+                output.classList.add('arabic-input');
+                output.classList.remove('tamil-output');
+            }
+
+            output.textContent = result;
+        }
+
+        function switchMode(mode) {
+            currentMode = mode;
+
+            // Update button states
+            if (mode === 'arabicToTamil') {
+                arabicToTamilBtn.classList.add('active');
+                tamilToArabicBtn.classList.remove('active');
+                inputLabel.textContent = 'Enter Arabic Number';
+                outputLabel.textContent = 'Tamil Numerals';
+                numberInput.placeholder = '123';
+                numberInput.classList.remove('tamil-input');
+                numberInput.classList.add('arabic-input');
+            } else {
+                tamilToArabicBtn.classList.add('active');
+                arabicToTamilBtn.classList.remove('active');
+                inputLabel.textContent = 'Enter Tamil Numerals';
+                outputLabel.textContent = 'Arabic Number';
+                numberInput.placeholder = '௧௨௩';
+                numberInput.classList.add('tamil-input');
+                numberInput.classList.remove('arabic-input');
+            }
+
+            // Clear and reconvert
+            numberInput.value = '';
+            output.textContent = '-';
+            numberInput.focus();
+        }
+
+        function clearAll() {
+            numberInput.value = '';
+            output.textContent = '-';
+            numberInput.focus();
+        }
+
+        function copyToClipboard() {
+            const text = output.textContent;
+            if (text === '-' || text === 'Invalid input') {
+                return;
+            }
+
+            navigator.clipboard.writeText(text).then(() => {
+                copyNotification.classList.add('show');
+                setTimeout(() => {
+                    copyNotification.classList.remove('show');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+            });
+        }
+
+        // Event listeners
+        numberInput.addEventListener('input', convert);
+        numberInput.addEventListener('paste', () => setTimeout(convert, 0));
+        arabicToTamilBtn.addEventListener('click', () => switchMode('arabicToTamil'));
+        tamilToArabicBtn.addEventListener('click', () => switchMode('tamilToArabic'));
+        clearBtn.addEventListener('click', clearAll);
+        copyBtn.addEventListener('click', copyToClipboard);
+
+        // Focus on input
+        numberInput.focus();
+    </script>
+</body>
+</html>

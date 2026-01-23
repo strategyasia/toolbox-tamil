@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Case Converter Tool</title>
+    <link rel="stylesheet" href="tools-common.css">
+    <style>
+        .conversion-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin: 25px 0;
+        }
+
+        .case-btn {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            background: var(--secondary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .case-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(78, 205, 196, 0.3);
+        }
+
+        .case-btn:active {
+            transform: translateY(0);
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        .input-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+
+        .input-textarea {
+            width: 100%;
+            min-height: 250px;
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+
+        .input-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.1);
+        }
+
+        .char-count {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: 6px;
+        }
+
+        .results-section {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .results-section.show {
+            display: block;
+        }
+
+        .result-item {
+            background: var(--bg-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .result-text {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            word-break: break-word;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            color: var(--text-color);
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .copy-btn {
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            border: 1px solid var(--secondary-color);
+            background: white;
+            color: var(--secondary-color);
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .copy-btn:hover {
+            background: var(--secondary-color);
+            color: white;
+        }
+
+        .copy-btn.copied {
+            background: var(--success-color);
+            color: white;
+            border-color: var(--success-color);
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .clear-btn {
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            background: var(--error-color);
+            color: white;
+        }
+
+        .clear-btn:hover {
+            background: #FF5252;
+            transform: translateY(-2px);
+        }
+
+        .success-message {
+            display: none;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--success-color);
+            color: white;
+            padding: 14px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(81, 207, 102, 0.3);
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .back-btn {
+            background: var(--bg-color);
+            color: var(--text-color);
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .back-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .conversion-buttons {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .control-buttons {
+                flex-direction: column;
+            }
+
+            .input-textarea {
+                min-height: 200px;
+            }
+
+            .success-message {
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tool-header">
+        <div class="container">
+            <div class="button-group">
+                <button class="back-btn" onclick="goBack()">← Back</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="tool-section">
+            <h1 class="tool-title">Case Converter</h1>
+            <p class="tool-description">Convert text between different case styles instantly</p>
+
+            <div class="input-group">
+                <label class="input-label">Enter Text</label>
+                <textarea id="inputText" class="input-textarea" placeholder="Type or paste your text here..."></textarea>
+                <div class="char-count">
+                    <span id="charCount">0</span> characters
+                </div>
+            </div>
+
+            <div class="conversion-buttons">
+                <button class="case-btn" onclick="convertToUpperCase()">
+                    <span>⬆</span> UPPERCASE
+                </button>
+                <button class="case-btn" onclick="convertToLowerCase()">
+                    <span>⬇</span> lowercase
+                </button>
+                <button class="case-btn" onclick="convertToTitleCase()">
+                    <span>🔤</span> Title Case
+                </button>
+                <button class="case-btn" onclick="convertToSentenceCase()">
+                    <span>📝</span> Sentence case
+                </button>
+                <button class="case-btn" onclick="convertToAlternatingCase()">
+                    <span>≈</span> aLtErNaTiNg
+                </button>
+            </div>
+
+            <div class="control-buttons">
+                <button class="clear-btn" onclick="clearAll()">🗑 Clear</button>
+            </div>
+
+            <div class="results-section" id="resultsSection">
+                <h3 style="margin-bottom: 20px; color: var(--text-color);">Conversions</h3>
+
+                <div class="result-item">
+                    <div class="result-label">UPPERCASE</div>
+                    <div class="result-text" id="resultUppercase">-</div>
+                    <div class="result-actions">
+                        <button class="copy-btn" onclick="copyResult('resultUppercase')">Copy</button>
+                    </div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-label">lowercase</div>
+                    <div class="result-text" id="resultLowercase">-</div>
+                    <div class="result-actions">
+                        <button class="copy-btn" onclick="copyResult('resultLowercase')">Copy</button>
+                    </div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-label">Title Case</div>
+                    <div class="result-text" id="resultTitleCase">-</div>
+                    <div class="result-actions">
+                        <button class="copy-btn" onclick="copyResult('resultTitleCase')">Copy</button>
+                    </div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-label">Sentence case</div>
+                    <div class="result-text" id="resultSentenceCase">-</div>
+                    <div class="result-actions">
+                        <button class="copy-btn" onclick="copyResult('resultSentenceCase')">Copy</button>
+                    </div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-label">aLtErNaTiNg Case</div>
+                    <div class="result-text" id="resultAlternatingCase">-</div>
+                    <div class="result-actions">
+                        <button class="copy-btn" onclick="copyResult('resultAlternatingCase')">Copy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="success-message" id="successMessage">Copied to clipboard!</div>
+
+    <script>
+        const inputText = document.getElementById('inputText');
+        const charCountDisplay = document.getElementById('charCount');
+        const resultsSection = document.getElementById('resultsSection');
+
+        // Real-time conversion as user types
+        inputText.addEventListener('input', function() {
+            updateCharCount();
+            if (this.value.trim()) {
+                updateAllConversions();
+                resultsSection.classList.add('show');
+            } else {
+                resultsSection.classList.remove('show');
+                clearResults();
+            }
+        });
+
+        function updateCharCount() {
+            charCountDisplay.textContent = inputText.value.length;
+        }
+
+        function updateAllConversions() {
+            const text = inputText.value;
+
+            document.getElementById('resultUppercase').textContent = convertToUpperCase(text);
+            document.getElementById('resultLowercase').textContent = convertToLowerCase(text);
+            document.getElementById('resultTitleCase').textContent = convertToTitleCase(text);
+            document.getElementById('resultSentenceCase').textContent = convertToSentenceCase(text);
+            document.getElementById('resultAlternatingCase').textContent = convertToAlternatingCase(text);
+        }
+
+        function convertToUpperCase(text) {
+            return (text || inputText.value).toUpperCase();
+        }
+
+        function convertToLowerCase(text) {
+            return (text || inputText.value).toLowerCase();
+        }
+
+        function convertToTitleCase(text) {
+            text = text || inputText.value;
+            return text
+                .toLowerCase()
+                .split(/\s+/)
+                .map(word => {
+                    if (word.length === 0) return '';
+                    return word.charAt(0).toUpperCase() + word.slice(1);
+                })
+                .join(' ');
+        }
+
+        function convertToSentenceCase(text) {
+            text = text || inputText.value;
+            return text
+                .toLowerCase()
+                .replace(/^\s*/, '')
+                .split(/([.!?]+\s+)/)
+                .map((sentence, index) => {
+                    if (index % 2 === 1) return sentence; // Keep punctuation and spaces
+                    if (sentence.trim().length === 0) return sentence;
+                    return sentence.charAt(0).toUpperCase() + sentence.slice(1);
+                })
+                .join('')
+                .trim();
+        }
+
+        function convertToAlternatingCase(text) {
+            text = text || inputText.value;
+            let result = '';
+            let charIndex = 0;
+
+            for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                if (/[a-zA-Z]/.test(char)) {
+                    result += charIndex % 2 === 0 ? char.toLowerCase() : char.toUpperCase();
+                    charIndex++;
+                } else {
+                    result += char;
+                }
+            }
+
+            return result;
+        }
+
+        function clearAll() {
+            inputText.value = '';
+            charCountDisplay.textContent = '0';
+            resultsSection.classList.remove('show');
+            clearResults();
+            inputText.focus();
+        }
+
+        function clearResults() {
+            document.getElementById('resultUppercase').textContent = '-';
+            document.getElementById('resultLowercase').textContent = '-';
+            document.getElementById('resultTitleCase').textContent = '-';
+            document.getElementById('resultSentenceCase').textContent = '-';
+            document.getElementById('resultAlternatingCase').textContent = '-';
+        }
+
+        function copyResult(elementId) {
+            const resultElement = document.getElementById(elementId);
+            const text = resultElement.textContent;
+
+            if (text === '-') return;
+
+            navigator.clipboard.writeText(text).then(() => {
+                showSuccessMessage();
+
+                // Visual feedback on button
+                const button = event.target;
+                button.classList.add('copied');
+                button.textContent = '✓ Copied';
+
+                setTimeout(() => {
+                    button.classList.remove('copied');
+                    button.textContent = 'Copy';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+            });
+        }
+
+        function showSuccessMessage() {
+            const message = document.getElementById('successMessage');
+            message.classList.add('show');
+
+            setTimeout(() => {
+                message.classList.remove('show');
+            }, 2000);
+        }
+
+        function goBack() {
+            window.location.href = '../index.html';
+        }
+
+        // Focus input on load
+        window.addEventListener('load', () => {
+            inputText.focus();
+        });
+    </script>
+</body>
+</html>
