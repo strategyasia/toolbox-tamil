@@ -12,10 +12,51 @@ const AdminAuth = {
     /**
      * Initialize authentication system
      */
-    init() {
+    async init() {
+        await this.autoSetupDefaultCredentials();
         this.checkFirstTimeSetup();
         this.checkSession();
         this.setupInactivityTimer();
+    },
+
+    /**
+     * Auto-setup default credentials if none exist
+     * This allows immediate access without going through setup.html
+     */
+    async autoSetupDefaultCredentials() {
+        // Check if credentials already exist
+        if (localStorage.getItem(this.CREDENTIALS_KEY)) {
+            return; // Credentials already set, skip
+        }
+
+        // Default credentials - CHANGE THESE FOR PRODUCTION
+        const defaultUsername = 'admin';
+        const defaultPassword = 'vino98843B@i';
+
+        try {
+            // Hash the default password
+            const hashedPassword = await this.hashPassword(defaultPassword);
+
+            // Store default credentials
+            const credentials = {
+                username: defaultUsername,
+                password: hashedPassword,
+                createdAt: Date.now(),
+                lastChanged: Date.now(),
+                autoSetup: true // Flag to indicate auto-setup
+            };
+
+            localStorage.setItem(this.CREDENTIALS_KEY, JSON.stringify(credentials));
+
+            // Log the auto-setup
+            this.logActivity('auto_setup', 'Default admin credentials initialized');
+
+            console.log('✅ Default admin credentials set up automatically');
+            console.log('Username:', defaultUsername);
+            console.log('Password: vino98843B@i');
+        } catch (error) {
+            console.error('Auto-setup failed:', error);
+        }
     },
 
     /**
@@ -369,6 +410,6 @@ const AdminAuth = {
 };
 
 // Initialize on page load
-document.addEventListener('DOMContentLoaded', () => {
-    AdminAuth.init();
+document.addEventListener('DOMContentLoaded', async () => {
+    await AdminAuth.init();
 });
