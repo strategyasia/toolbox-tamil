@@ -377,6 +377,33 @@
         const statusDiv = document.getElementById('form-status');
 
         form.addEventListener('submit', function(e) {
+            // Save submission to localStorage for admin panel
+            const formData = {
+                id: Date.now(),
+                timestamp: new Date().toISOString(),
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                enquiryType: document.getElementById('enquiry-type').value,
+                subject: document.getElementById('subject').value,
+                message: document.getElementById('message').value,
+                status: 'unread',
+                ipAddress: 'N/A'
+            };
+
+            // Get existing enquiries or initialize empty array
+            let enquiries = JSON.parse(localStorage.getItem('contact_enquiries') || '[]');
+
+            // Add new enquiry to the beginning
+            enquiries.unshift(formData);
+
+            // Keep only last 100 enquiries
+            if (enquiries.length > 100) {
+                enquiries = enquiries.slice(0, 100);
+            }
+
+            // Save back to localStorage
+            localStorage.setItem('contact_enquiries', JSON.stringify(enquiries));
+
             // Show loading state
             submitBtn.disabled = true;
             btnText.textContent = 'Sending...';

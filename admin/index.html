@@ -40,6 +40,11 @@
                 <span class="icon">📈</span>
                 <span>Analytics</span>
             </a>
+            <a href="#" class="nav-item" data-section="enquiries">
+                <span class="icon">📧</span>
+                <span>Enquiries</span>
+                <span class="badge" id="enquiries-badge" style="display: none;">0</span>
+            </a>
             <a href="#" class="nav-item" data-section="tools">
                 <span class="icon">🛠️</span>
                 <span>Tools Manager</span>
@@ -399,6 +404,53 @@
                                 <span class="country-value">456</span>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Enquiries Section -->
+            <section id="section-enquiries" class="content-section">
+                <div class="section-header">
+                    <h2>📧 Contact Enquiries</h2>
+                    <div class="section-actions">
+                        <button class="btn btn-secondary" onclick="markAllEnquiriesAsRead()">Mark All as Read</button>
+                        <button class="btn btn-danger" onclick="clearAllEnquiries()">Clear All</button>
+                    </div>
+                </div>
+
+                <div class="enquiries-stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-enquiries">0</div>
+                        <div class="stat-label">Total Enquiries</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="unread-enquiries">0</div>
+                        <div class="stat-label">Unread</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="ad-enquiries">0</div>
+                        <div class="stat-label">Ad Opportunities</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="general-enquiries">0</div>
+                        <div class="stat-label">General Enquiries</div>
+                    </div>
+                </div>
+
+                <div class="enquiries-filter">
+                    <button class="filter-btn active" data-filter="all">All</button>
+                    <button class="filter-btn" data-filter="unread">Unread</button>
+                    <button class="filter-btn" data-filter="Ad Opportunities">Ad Opportunities</button>
+                    <button class="filter-btn" data-filter="General Enquiry">General</button>
+                    <button class="filter-btn" data-filter="Technical Support">Technical</button>
+                </div>
+
+                <div id="enquiries-list" class="enquiries-list">
+                    <!-- Enquiries will be loaded here dynamically -->
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <h3>No enquiries yet</h3>
+                        <p>Contact form submissions will appear here.</p>
                     </div>
                 </div>
             </section>

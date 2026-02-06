@@ -628,7 +628,213 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
+// Enquiries Management Functions
+function loadEnquiries() {
+    const enquiries = JSON.parse(localStorage.getItem('contact_enquiries') || '[]');
+    const enquiriesList = document.getElementById('enquiries-list');
+
+    // Update stats
+    document.getElementById('total-enquiries').textContent = enquiries.length;
+    const unread = enquiries.filter(e => e.status === 'unread').length;
+    document.getElementById('unread-enquiries').textContent = unread;
+    const adEnquiries = enquiries.filter(e => e.enquiryType === 'Ad Opportunities').length;
+    document.getElementById('ad-enquiries').textContent = adEnquiries;
+    const generalEnquiries = enquiries.filter(e => e.enquiryType === 'General Enquiry').length;
+    document.getElementById('general-enquiries').textContent = generalEnquiries;
+
+    // Update badge
+    const badge = document.getElementById('enquiries-badge');
+    if (unread > 0) {
+        badge.textContent = unread;
+        badge.style.display = 'inline-block';
+    } else {
+        badge.style.display = 'none';
+    }
+
+    // Display enquiries
+    if (enquiries.length === 0) {
+        enquiriesList.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">📭</div>
+                <h3>No enquiries yet</h3>
+                <p>Contact form submissions will appear here.</p>
+            </div>
+        `;
+        return;
+    }
+
+    enquiriesList.innerHTML = enquiries.map(enq => `
+        <div class="enquiry-card ${enq.status === 'unread' ? 'unread' : ''}" data-id="${enq.id}">
+            <div class="enquiry-header">
+                <div class="enquiry-info">
+                    <span class="enquiry-type ${getEnquiryTypeClass(enq.enquiryType)}">${enq.enquiryType}</span>
+                    <span class="enquiry-date">${formatEnquiryDate(enq.timestamp)}</span>
+                    ${enq.status === 'unread' ? '<span class="unread-badge">NEW</span>' : ''}
+                </div>
+                <div class="enquiry-actions">
+                    <button class="btn-icon" onclick="markEnquiryAsRead('${enq.id}')" title="Mark as read">
+                        ${enq.status === 'unread' ? '✓' : '✓✓'}
+                    </button>
+                    <button class="btn-icon" onclick="deleteEnquiry('${enq.id}')" title="Delete">🗑️</button>
+                </div>
+            </div>
+            <div class="enquiry-content">
+                <h4>${enq.subject}</h4>
+                <div class="enquiry-meta">
+                    <span><strong>From:</strong> ${enq.name}</span>
+                    <span><strong>Email:</strong> <a href="mailto:${enq.email}">${enq.email}</a></span>
+                </div>
+                <p class="enquiry-message">${enq.message}</p>
+            </div>
+        </div>
+    `).join('');
+}
+
+function getEnquiryTypeClass(type) {
+    const classes = {
+        'Ad Opportunities': 'type-ad',
+        'General Enquiry': 'type-general',
+        'Technical Support': 'type-tech',
+        'Feedback': 'type-feedback',
+        'Bug Report': 'type-bug',
+        'Other': 'type-other'
+    };
+    return classes[type] || 'type-other';
+}
+
+function formatEnquiryDate(timestamp) {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diff = now - date;
+    const minutes = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days = Math.floor(diff / 86400000);
+
+    if (minutes < 1) return 'Just now';
+    if (minutes < 60) return `${minutes}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    if (days < 7) return `${days}d ago`;
+    return date.toLocaleDateString();
+}
+
+function markEnquiryAsRead(id) {
+    const enquiries = JSON.parse(localStorage.getItem('contact_enquiries') || '[]');
+    const index = enquiries.findIndex(e => e.id == id);
+    if (index !== -1) {
+        enquiries[index].status = 'read';
+        localStorage.setItem('contact_enquiries', JSON.stringify(enquiries));
+        loadEnquiries();
+        Dashboard.showNotification('Marked as read', 'success');
+    }
+}
+
+function markAllEnquiriesAsRead() {
+    const enquiries = JSON.parse(localStorage.getItem('contact_enquiries') || '[]');
+    enquiries.forEach(e => e.status = 'read');
+    localStorage.setItem('contact_enquiries', JSON.stringify(enquiries));
+    loadEnquiries();
+    Dashboard.showNotification('All enquiries marked as read', 'success');
+}
+
+function deleteEnquiry(id) {
+    if (!confirm('Are you sure you want to delete this enquiry?')) return;
+
+    let enquiries = JSON.parse(localStorage.getItem('contact_enquiries') || '[]');
+    enquiries = enquiries.filter(e => e.id != id);
+    localStorage.setItem('contact_enquiries', JSON.stringify(enquiries));
+    loadEnquiries();
+    Dashboard.showNotification('Enquiry deleted', 'success');
+}
+
+function clearAllEnquiries() {
+    if (!confirm('Are you sure you want to delete ALL enquiries? This cannot be undone!')) return;
+
+    localStorage.removeItem('contact_enquiries');
+    loadEnquiries();
+    Dashboard.showNotification('All enquiries cleared', 'success');
+}
+
+// Setup enquiries filter buttons
+document.addEventListener('DOMContentLoaded', () => {
+    const filterButtons = document.querySelectorAll('.enquiries-filter .filter-btn');
+    filterButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            filterButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const filter = btn.getAttribute('data-filter');
+            filterEnquiries(filter);
+        });
+    });
+});
+
+function filterEnquiries(filter) {
+    const enquiries = JSON.parse(localStorage.getItem('contact_enquiries') || '[]');
+    let filtered = enquiries;
+
+    if (filter === 'unread') {
+        filtered = enquiries.filter(e => e.status === 'unread');
+    } else if (filter !== 'all') {
+        filtered = enquiries.filter(e => e.enquiryType === filter);
+    }
+
+    const enquiriesList = document.getElementById('enquiries-list');
+    if (filtered.length === 0) {
+        enquiriesList.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-icon">🔍</div>
+                <h3>No matching enquiries</h3>
+                <p>Try a different filter.</p>
+            </div>
+        `;
+        return;
+    }
+
+    enquiriesList.innerHTML = filtered.map(enq => `
+        <div class="enquiry-card ${enq.status === 'unread' ? 'unread' : ''}" data-id="${enq.id}">
+            <div class="enquiry-header">
+                <div class="enquiry-info">
+                    <span class="enquiry-type ${getEnquiryTypeClass(enq.enquiryType)}">${enq.enquiryType}</span>
+                    <span class="enquiry-date">${formatEnquiryDate(enq.timestamp)}</span>
+                    ${enq.status === 'unread' ? '<span class="unread-badge">NEW</span>' : ''}
+                </div>
+                <div class="enquiry-actions">
+                    <button class="btn-icon" onclick="markEnquiryAsRead('${enq.id}')" title="Mark as read">
+                        ${enq.status === 'unread' ? '✓' : '✓✓'}
+                    </button>
+                    <button class="btn-icon" onclick="deleteEnquiry('${enq.id}')" title="Delete">🗑️</button>
+                </div>
+            </div>
+            <div class="enquiry-content">
+                <h4>${enq.subject}</h4>
+                <div class="enquiry-meta">
+                    <span><strong>From:</strong> ${enq.name}</span>
+                    <span><strong>Email:</strong> <a href="mailto:${enq.email}">${enq.email}</a></span>
+                </div>
+                <p class="enquiry-message">${enq.message}</p>
+            </div>
+        </div>
+    `).join('');
+}
+
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', () => {
     Dashboard.init();
+
+    // Load enquiries when enquiries section is shown
+    const enquiriesNav = document.querySelector('[data-section="enquiries"]');
+    if (enquiriesNav) {
+        enquiriesNav.addEventListener('click', () => {
+            setTimeout(() => loadEnquiries(), 100);
+        });
+    }
+
+    // Load initial enquiries badge count
+    const enquiries = JSON.parse(localStorage.getItem('contact_enquiries') || '[]');
+    const unread = enquiries.filter(e => e.status === 'unread').length;
+    const badge = document.getElementById('enquiries-badge');
+    if (unread > 0 && badge) {
+        badge.textContent = unread;
+        badge.style.display = 'inline-block';
+    }
 });
