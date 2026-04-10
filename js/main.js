@@ -96,46 +96,42 @@ function initializeToolCards() {
 }
 
 /**
- * Open tool page
+ * Open tool page — checks user gate first
  */
 function openTool(toolId) {
-    // For now, show an alert. Later we'll navigate to individual tool pages
     const toolNames = {
-        'pdf-to-word': { en: 'PDF to Word Converter', ta: 'PDF இலிருந்து Word மாற்றி' },
-        'pdf-merger': { en: 'PDF Merger', ta: 'PDF இணைப்பு' },
-        'pdf-splitter': { en: 'PDF Splitter', ta: 'PDF பிரிப்பான்' },
-        'pdf-compressor': { en: 'PDF Compressor', ta: 'PDF சுருக்கி' },
-        'pdf-to-images': { en: 'PDF to Images', ta: 'PDF இலிருந்து படங்கள்' },
-        'images-to-pdf': { en: 'Images to PDF', ta: 'படங்கள் இலிருந்து PDF' },
-        'image-compressor': { en: 'Image Compressor', ta: 'படம் சுருக்கி' },
-        'image-resizer': { en: 'Image Resizer', ta: 'படம் மறுஅளவு' },
-        'image-converter': { en: 'Image Converter', ta: 'படம் மாற்றி' },
-        'image-cropper': { en: 'Image Cropper', ta: 'படம் வெட்டி' },
-        'tamil-typing': { en: 'Tamil Typing Tool', ta: 'தமிழ் தட்டச்சு கருவி' },
-        'tamil-unicode': { en: 'Tamil Unicode Converter', ta: 'தமிழ் யூனிகோட் மாற்றி' },
-        'tamil-transliteration': { en: 'Tamil Transliteration', ta: 'தமிழ் ஒலிபெயர்ப்பு' },
-        'tamil-word-counter': { en: 'Tamil Word Counter', ta: 'தமிழ் சொல் கணக்கி' },
-        'tamil-calendar': { en: 'Tamil Calendar Converter', ta: 'தமிழ் நாட்காட்டி மாற்றி' },
-        'tamil-numerals': { en: 'Tamil Numeral Converter', ta: 'தமிழ் எண் மாற்றி' },
-        'text-to-speech': { en: 'Text to Speech', ta: 'உரை முதல் பேச்சு வரை' },
-        'word-counter': { en: 'Word Counter', ta: 'சொல் கணக்கி' },
-        'case-converter': { en: 'Case Converter', ta: 'வழக்கு மாற்றி' },
-        'text-diff': { en: 'Text Diff Checker', ta: 'உரை வேறுபாடு சரிபார்ப்பு' },
-        'qr-generator': { en: 'QR Code Generator', ta: 'QR குறியீடு உருவாக்கி' },
-        'barcode-generator': { en: 'Barcode Generator', ta: 'பார்கோடு உருவாக்கி' },
-        'color-picker': { en: 'Color Picker', ta: 'வண்ண தேர்வாளர்' },
-        'password-generator': { en: 'Password Generator', ta: 'கடவுச்சொல் உருவாக்கி' }
+        'pdf-to-word':          { en: 'PDF to Word Converter',    ta: 'PDF இலிருந்து Word மாற்றி' },
+        'pdf-merger':           { en: 'PDF Merger',               ta: 'PDF இணைப்பு' },
+        'pdf-splitter':         { en: 'PDF Splitter',             ta: 'PDF பிரிப்பான்' },
+        'pdf-compressor':       { en: 'PDF Compressor',           ta: 'PDF சுருக்கி' },
+        'pdf-to-images':        { en: 'PDF to Images',            ta: 'PDF இலிருந்து படங்கள்' },
+        'images-to-pdf':        { en: 'Images to PDF',            ta: 'படங்கள் இலிருந்து PDF' },
+        'image-compressor':     { en: 'Image Compressor',         ta: 'படம் சுருக்கி' },
+        'image-resizer':        { en: 'Image Resizer',            ta: 'படம் மறுஅளவு' },
+        'image-converter':      { en: 'Image Converter',          ta: 'படம் மாற்றி' },
+        'image-cropper':        { en: 'Image Cropper',            ta: 'படம் வெட்டி' },
+        'tamil-typing':         { en: 'Tamil Typing Tool',        ta: 'தமிழ் தட்டச்சு கருவி' },
+        'tamil-unicode':        { en: 'Tamil Unicode Converter',  ta: 'தமிழ் யூனிகோட் மாற்றி' },
+        'tamil-transliteration':{ en: 'Tamil Transliteration',   ta: 'தமிழ் ஒலிபெயர்ப்பு' },
+        'tamil-word-counter':   { en: 'Tamil Word Counter',       ta: 'தமிழ் சொல் கணக்கி' },
+        'tamil-calendar':       { en: 'Tamil Calendar Converter', ta: 'தமிழ் நாட்காட்டி மாற்றி' },
+        'tamil-numerals':       { en: 'Tamil Numeral Converter',  ta: 'தமிழ் எண் மாற்றி' },
+        'text-to-speech':       { en: 'Text to Speech',           ta: 'உரை முதல் பேச்சு வரை' },
+        'word-counter':         { en: 'Word Counter',             ta: 'சொல் கணக்கி' },
+        'case-converter':       { en: 'Case Converter',           ta: 'வழக்கு மாற்றி' },
+        'text-diff':            { en: 'Text Diff Checker',        ta: 'உரை வேறுபாடு சரிபார்ப்பு' },
+        'qr-generator':         { en: 'QR Code Generator',        ta: 'QR குறியீடு உருவாக்கி' },
+        'barcode-generator':    { en: 'Barcode Generator',        ta: 'பார்கோடு உருவாக்கி' },
+        'color-picker':         { en: 'Color Picker',             ta: 'வண்ண தேர்வாளர்' },
+        'password-generator':   { en: 'Password Generator',       ta: 'கடவுச்சொல் உருவாக்கி' }
     };
 
     const toolName = toolNames[toolId]?.[currentLang] || toolId;
 
-    // For now, just show a message. Later we'll navigate to the tool page
-    showNotification(`Opening ${toolName}...`, 'info');
-
-    // Navigate to tool page after a brief delay
-    setTimeout(() => {
+    // Gate check — shows modal if user not yet registered
+    UserGate.checkAndProceed(toolId, toolName, () => {
         window.location.href = `tools/${toolId}.html`;
-    }, 500);
+    });
 }
 
 /**
