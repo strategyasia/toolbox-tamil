@@ -191,9 +191,11 @@ function refreshAds() {
     });
 }
 
-// Initialize ads when DOM is ready
+// Initialize ads when DOM is ready — only if consent has been granted
 document.addEventListener('DOMContentLoaded', () => {
-    initializeAds();
+    // ConsentManager controls ad boot — it calls ToolBoxAds.init() after user accepts.
+    // We do NOT call initializeAds() here directly anymore.
+    // If consent was already given on a previous visit, ConsentManager.init() handles it.
 });
 
 // Export functions for external use
