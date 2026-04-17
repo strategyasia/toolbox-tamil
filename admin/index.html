@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - ToolBox Tamil</title>
+    <base href="/admin/">
     <link rel="stylesheet" href="css/admin.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -73,11 +74,17 @@
         </div>
     </aside>
 
+    <!-- Sidebar overlay for mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
     <!-- Main Content -->
     <main class="main-content">
         <!-- Header -->
         <header class="dashboard-header">
             <div class="header-left">
+                <button class="hamburger-btn" id="sidebarToggle" aria-label="Toggle menu">
+                    <span></span><span></span><span></span>
+                </button>
                 <h1 id="pageTitle">Dashboard Overview</h1>
                 <p id="pageSubtitle">Welcome back! Here's what's happening today.</p>
             </div>
@@ -107,8 +114,8 @@
                         <div class="stat-icon">👥</div>
                         <div class="stat-info">
                             <h3>Total Visitors</h3>
-                            <p class="stat-number" id="totalVisitors">Loading...</p>
-                            <span class="stat-change positive">+12.5%</span>
+                            <p class="stat-number" id="totalVisitors">—</p>
+                            <span class="stat-change neutral" id="todayVisitorsBadge">Today: —</span>
                         </div>
                     </div>
                     <div class="stat-card">
@@ -116,23 +123,23 @@
                         <div class="stat-info">
                             <h3>Ad Revenue</h3>
                             <p class="stat-number" id="adRevenue">$0.00</p>
-                            <span class="stat-change positive">+8.2%</span>
+                            <span class="stat-change neutral">Ads disabled</span>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon">📊</div>
                         <div class="stat-info">
-                            <h3>Total Clicks</h3>
-                            <p class="stat-number" id="totalClicks">-</p>
-                            <span class="stat-change negative">-2.1%</span>
+                            <h3>Tool Clicks</h3>
+                            <p class="stat-number" id="totalClicks">—</p>
+                            <span class="stat-change neutral" id="monthClicksBadge">This month: —</span>
                         </div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon">🛠️</div>
                         <div class="stat-info">
                             <h3>Active Tools</h3>
-                            <p class="stat-number">5</p>
-                            <span class="stat-change neutral">0%</span>
+                            <p class="stat-number" id="activeTools">24</p>
+                            <span class="stat-change neutral">All live</span>
                         </div>
                     </div>
                 </div>
@@ -151,27 +158,7 @@
                 <div class="recent-activity">
                     <h3>Recent Activity</h3>
                     <div class="activity-list" id="activityList">
-                        <div class="activity-item">
-                            <span class="activity-icon">👁️</span>
-                            <div class="activity-content">
-                                <p><strong>New visitor</strong> from India used PDF to Word tool</p>
-                                <span class="activity-time">2 minutes ago</span>
-                            </div>
-                        </div>
-                        <div class="activity-item">
-                            <span class="activity-icon">💰</span>
-                            <div class="activity-content">
-                                <p><strong>Ad clicked</strong> - Top leaderboard banner</p>
-                                <span class="activity-time">5 minutes ago</span>
-                            </div>
-                        </div>
-                        <div class="activity-item">
-                            <span class="activity-icon">🔧</span>
-                            <div class="activity-content">
-                                <p><strong>Tool used</strong> - Tamil Typing Tool accessed 15 times</p>
-                                <span class="activity-time">10 minutes ago</span>
-                            </div>
-                        </div>
+                        <p style="color:#999;text-align:center;padding:20px;">No activity yet.</p>
                     </div>
                 </div>
             </section>
@@ -206,7 +193,7 @@
                         </div>
                         <div class="form-group">
                             <label for="publisherId">Publisher ID</label>
-                            <input type="text" id="publisherId" placeholder="ca-pub-XXXXXXXXXXXXXXXX">
+                            <input type="text" id="publisherId" placeholder="ca-pub-6827825619861169" value="ca-pub-6827825619861169">
                         </div>
                     </div>
                 </div>
@@ -309,25 +296,26 @@
                 </div>
 
                 <div class="settings-card">
-                    <h3>📊 Ad Performance (Last 30 Days)</h3>
+                    <h3>📊 Ad Performance</h3>
                     <div class="ad-stats-grid">
                         <div class="ad-stat">
                             <h4>Impressions</h4>
-                            <p class="ad-stat-value">12,450</p>
+                            <p class="ad-stat-value">—</p>
                         </div>
                         <div class="ad-stat">
                             <h4>Clicks</h4>
-                            <p class="ad-stat-value">124</p>
+                            <p class="ad-stat-value">—</p>
                         </div>
                         <div class="ad-stat">
                             <h4>CTR</h4>
-                            <p class="ad-stat-value">1.00%</p>
+                            <p class="ad-stat-value">—</p>
                         </div>
                         <div class="ad-stat">
                             <h4>Revenue</h4>
-                            <p class="ad-stat-value">$24.80</p>
+                            <p class="ad-stat-value">$0.00</p>
                         </div>
                     </div>
+                    <p style="color:#999;font-size:13px;margin-top:12px;">Ad network not connected. Enable ads above to see performance data.</p>
                 </div>
             </section>
 
@@ -356,52 +344,60 @@
                 <div class="analytics-grid">
                     <div class="analytics-card">
                         <h3>Device Breakdown</h3>
-                        <div class="device-stats">
+                        <div class="device-stats" id="deviceStats">
                             <div class="device-item">
                                 <span class="device-name">💻 Desktop</span>
                                 <div class="device-bar">
-                                    <div class="device-fill" style="width: 55%"></div>
+                                    <div class="device-fill" id="desktopBar" style="width:0%"></div>
                                 </div>
-                                <span class="device-percent">55%</span>
+                                <span class="device-percent" id="desktopPct">0%</span>
                             </div>
                             <div class="device-item">
                                 <span class="device-name">📱 Mobile</span>
                                 <div class="device-bar">
-                                    <div class="device-fill" style="width: 35%"></div>
+                                    <div class="device-fill" id="mobileBar" style="width:0%"></div>
                                 </div>
-                                <span class="device-percent">35%</span>
+                                <span class="device-percent" id="mobilePct">0%</span>
                             </div>
                             <div class="device-item">
                                 <span class="device-name">📟 Tablet</span>
                                 <div class="device-bar">
-                                    <div class="device-fill" style="width: 10%"></div>
+                                    <div class="device-fill" id="tabletBar" style="width:0%"></div>
                                 </div>
-                                <span class="device-percent">10%</span>
+                                <span class="device-percent" id="tabletPct">0%</span>
                             </div>
                         </div>
                     </div>
                     <div class="analytics-card">
-                        <h3>Top Countries</h3>
-                        <div class="countries-list">
-                            <div class="country-item">
-                                <span class="flag">🇮🇳</span>
-                                <span class="country-name">India</span>
-                                <span class="country-value">2,450</span>
+                        <h3>Traffic Sources</h3>
+                        <div class="device-stats" id="referrerStats">
+                            <div class="device-item">
+                                <span class="device-name">🔗 Direct</span>
+                                <div class="device-bar">
+                                    <div class="device-fill" id="directBar" style="width:0%"></div>
+                                </div>
+                                <span class="device-percent" id="directPct">0%</span>
                             </div>
-                            <div class="country-item">
-                                <span class="flag">🇺🇸</span>
-                                <span class="country-name">United States</span>
-                                <span class="country-value">1,230</span>
+                            <div class="device-item">
+                                <span class="device-name">🔍 Search</span>
+                                <div class="device-bar">
+                                    <div class="device-fill" id="searchBar" style="width:0%"></div>
+                                </div>
+                                <span class="device-percent" id="searchPct">0%</span>
                             </div>
-                            <div class="country-item">
-                                <span class="flag">🇬🇧</span>
-                                <span class="country-name">United Kingdom</span>
-                                <span class="country-value">890</span>
+                            <div class="device-item">
+                                <span class="device-name">📣 Social</span>
+                                <div class="device-bar">
+                                    <div class="device-fill" id="socialBar" style="width:0%"></div>
+                                </div>
+                                <span class="device-percent" id="socialPct">0%</span>
                             </div>
-                            <div class="country-item">
-                                <span class="flag">🇨🇦</span>
-                                <span class="country-name">Canada</span>
-                                <span class="country-value">456</span>
+                            <div class="device-item">
+                                <span class="device-name">↩️ Referral</span>
+                                <div class="device-bar">
+                                    <div class="device-fill" id="referralBar" style="width:0%"></div>
+                                </div>
+                                <span class="device-percent" id="referralPct">0%</span>
                             </div>
                         </div>
                     </div>
@@ -468,62 +464,12 @@
                             <tr>
                                 <th>Tool Name</th>
                                 <th>Category</th>
-                                <th>Usage (30d)</th>
+                                <th>Total Uses</th>
                                 <th>Status</th>
-                                <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td><strong>PDF to Word</strong></td>
-                                <td>PDF Tools</td>
-                                <td>1,245 uses</td>
-                                <td><span class="badge badge-success">Active</span></td>
-                                <td>
-                                    <button class="btn btn-icon">✏️</button>
-                                    <button class="btn btn-icon">📊</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><strong>PDF Merger</strong></td>
-                                <td>PDF Tools</td>
-                                <td>890 uses</td>
-                                <td><span class="badge badge-success">Active</span></td>
-                                <td>
-                                    <button class="btn btn-icon">✏️</button>
-                                    <button class="btn btn-icon">📊</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><strong>Tamil Typing</strong></td>
-                                <td>Tamil Tools</td>
-                                <td>2,345 uses</td>
-                                <td><span class="badge badge-success">Active</span></td>
-                                <td>
-                                    <button class="btn btn-icon">✏️</button>
-                                    <button class="btn btn-icon">📊</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><strong>QR Generator</strong></td>
-                                <td>Utility Tools</td>
-                                <td>678 uses</td>
-                                <td><span class="badge badge-success">Active</span></td>
-                                <td>
-                                    <button class="btn btn-icon">✏️</button>
-                                    <button class="btn btn-icon">📊</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><strong>Password Generator</strong></td>
-                                <td>Utility Tools</td>
-                                <td>1,123 uses</td>
-                                <td><span class="badge badge-success">Active</span></td>
-                                <td>
-                                    <button class="btn btn-icon">✏️</button>
-                                    <button class="btn btn-icon">📊</button>
-                                </td>
-                            </tr>
+                        <tbody id="toolsTableBody">
+                            <tr><td colspan="4" style="text-align:center;color:#999;padding:20px;">Loading...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -576,7 +522,8 @@
                             <label for="confirmPassword">Confirm New Password</label>
                             <input type="password" id="confirmPassword" placeholder="Confirm new password">
                         </div>
-                        <button class="btn btn-primary">Update Password</button>
+                        <button class="btn btn-primary" id="updatePasswordBtn">Update Password</button>
+                        <div id="passwordMsg" style="margin-top:10px;display:none;"></div>
                     </div>
 
                     <div class="settings-card">
@@ -708,7 +655,7 @@
                     </select>
                     <input type="date" id="logDateFrom">
                     <input type="date" id="logDateTo">
-                    <button class="btn btn-primary">Filter</button>
+                    <button class="btn btn-primary" id="filterLogsBtn">Filter</button>
                 </div>
 
                 <div class="logs-table-wrapper">

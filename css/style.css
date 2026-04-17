@@ -616,3 +616,20 @@ ins.adsbygoogle {
 .ad-banner.ad-loaded .ad-placeholder {
     display: none;
 }
+
+/* Ad banner containers */
+.ad-banner {
+    min-height: 0;
+    overflow: hidden;
+}
+.ad-banner:empty {
+    display: none;
+}
+.ad-label {
+    font-size: 10px;
+    color: #999;
+    text-align: center;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}

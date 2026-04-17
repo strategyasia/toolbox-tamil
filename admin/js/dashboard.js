@@ -15,6 +15,7 @@ const Dashboard = {
      */
     init() {
         this.setupNavigation();
+        this.setupSidebarToggle();
         this.loadUserInfo();
         this.setupLogout();
         this.loadOverviewData();
@@ -23,6 +24,25 @@ const Dashboard = {
         this.setupSettings();
         this.setupActivityLogs();
         this.setupRefresh();
+        this.loadToolsTable();
+    },
+
+    setupSidebarToggle() {
+        const toggle = document.getElementById('sidebarToggle');
+        const sidebar = document.querySelector('.sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        if (!toggle || !sidebar || !overlay) return;
+
+        const open = () => { sidebar.classList.add('open'); overlay.classList.add('active'); };
+        const close = () => { sidebar.classList.remove('open'); overlay.classList.remove('active'); };
+
+        toggle.addEventListener('click', () => sidebar.classList.contains('open') ? close() : open());
+        overlay.addEventListener('click', close);
+
+        // Close sidebar when a nav item is clicked on mobile
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => { if (window.innerWidth <= 1024) close(); });
+        });
     },
 
     /**
@@ -121,15 +141,133 @@ const Dashboard = {
      * Load overview data
      */
     loadOverviewData() {
-        // Get analytics data from localStorage
         const analytics = this.getAnalyticsData();
 
-        // Update stats
-        document.getElementById('totalVisitors').textContent = this.formatNumber(analytics.totalVisitors);
-        document.getElementById('todayVisitors').textContent = this.formatNumber(analytics.todayVisitors);
-        document.getElementById('monthVisitors').textContent = this.formatNumber(analytics.monthVisitors);
-        document.getElementById('adRevenue').textContent = '$' + analytics.adRevenue.toFixed(2);
-        document.getElementById('totalClicks').textContent = this.formatNumber(analytics.totalClicks);
+        this.setEl('totalVisitors', this.formatNumber(analytics.totalVisitors));
+        this.setEl('adRevenue', '$' + analytics.adRevenue.toFixed(2));
+        this.setEl('totalClicks', this.formatNumber(analytics.totalClicks));
+        this.setEl('todayVisitorsBadge', 'Today: ' + this.formatNumber(analytics.todayVisitors));
+        this.setEl('monthClicksBadge', 'This month: ' + this.formatNumber(analytics.monthVisitors));
+
+        this.loadRecentActivity();
+    },
+
+    setEl(id, text) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = text;
+    },
+
+    /**
+     * Load recent activity from admin logs
+     */
+    loadRecentActivity() {
+        const list = document.getElementById('activityList');
+        if (!list) return;
+        const logs = AdminAuth.getActivityLogs().slice(0, 8);
+        if (!logs.length) {
+            list.innerHTML = '<p style="color:#999;text-align:center;padding:20px;">No activity yet.</p>';
+            return;
+        }
+        const icons = { login: '🔑', logout: '🚪', login_failed: '⚠️', ads_update: '💰', settings_update: '⚙️' };
+        list.innerHTML = logs.map(log => `
+            <div class="activity-item">
+                <span class="activity-icon">${icons[log.type] || '📋'}</span>
+                <div class="activity-content">
+                    <p>${log.description}</p>
+                    <span class="activity-time">${this.timeAgo(log.timestamp)}</span>
+                </div>
+            </div>
+        `).join('');
+    },
+
+    timeAgo(ts) {
+        const diff = Date.now() - new Date(ts).getTime();
+        const m = Math.floor(diff / 60000);
+        if (m < 1) return 'Just now';
+        if (m < 60) return m + 'm ago';
+        const h = Math.floor(m / 60);
+        if (h < 24) return h + 'h ago';
+        return Math.floor(h / 24) + 'd ago';
+    },
+
+    /**
+     * Load analytics section — device & referrer breakdowns
+     */
+    loadAnalytics() {
+        let s = {};
+        try { s = JSON.parse(localStorage.getItem('tb_stats')) || {}; } catch {}
+
+        // Device breakdown
+        const dv = s.deviceViews || {};
+        const dvTotal = (dv.desktop || 0) + (dv.mobile || 0) + (dv.tablet || 0) || 1;
+        const pct = (n) => Math.round((n / dvTotal) * 100);
+        this.setBar('desktop', pct(dv.desktop || 0));
+        this.setBar('mobile', pct(dv.mobile || 0));
+        this.setBar('tablet', pct(dv.tablet || 0));
+
+        // Traffic sources
+        const rv = s.referrerViews || {};
+        const rvTotal = (rv.direct || 0) + (rv.search || 0) + (rv.social || 0) + (rv.referral || 0) || 1;
+        this.setBar('direct', Math.round(((rv.direct || 0) / rvTotal) * 100));
+        this.setBar('search', Math.round(((rv.search || 0) / rvTotal) * 100));
+        this.setBar('social', Math.round(((rv.social || 0) / rvTotal) * 100));
+        this.setBar('referral', Math.round(((rv.referral || 0) / rvTotal) * 100));
+    },
+
+    setBar(key, pct) {
+        const bar = document.getElementById(key + 'Bar');
+        const label = document.getElementById(key + 'Pct');
+        if (bar) bar.style.width = pct + '%';
+        if (label) label.textContent = pct + '%';
+    },
+
+    /**
+     * Load tools table from real localStorage data
+     */
+    loadToolsTable() {
+        const tbody = document.getElementById('toolsTableBody');
+        if (!tbody) return;
+        let s = {};
+        try { s = JSON.parse(localStorage.getItem('tb_stats')) || {}; } catch {}
+        const toolViews = s.toolViews || {};
+
+        const tools = [
+            { key: 'pdf-to-word', name: 'PDF to Word', cat: 'PDF Tools' },
+            { key: 'pdf-merger', name: 'PDF Merger', cat: 'PDF Tools' },
+            { key: 'pdf-splitter', name: 'PDF Splitter', cat: 'PDF Tools' },
+            { key: 'pdf-compressor', name: 'PDF Compressor', cat: 'PDF Tools' },
+            { key: 'pdf-to-images', name: 'PDF to Images', cat: 'PDF Tools' },
+            { key: 'images-to-pdf', name: 'Images to PDF', cat: 'PDF Tools' },
+            { key: 'image-compressor', name: 'Image Compressor', cat: 'Image Tools' },
+            { key: 'image-resizer', name: 'Image Resizer', cat: 'Image Tools' },
+            { key: 'image-cropper', name: 'Image Cropper', cat: 'Image Tools' },
+            { key: 'image-converter', name: 'Image Converter', cat: 'Image Tools' },
+            { key: 'tamil-typing', name: 'Tamil Typing', cat: 'Tamil Tools' },
+            { key: 'tamil-transliteration', name: 'Tamil Transliteration', cat: 'Tamil Tools' },
+            { key: 'tamil-unicode', name: 'Tamil Unicode', cat: 'Tamil Tools' },
+            { key: 'tamil-calendar', name: 'Tamil Calendar', cat: 'Tamil Tools' },
+            { key: 'tamil-numerals', name: 'Tamil Numerals', cat: 'Tamil Tools' },
+            { key: 'tamil-word-counter', name: 'Tamil Word Counter', cat: 'Tamil Tools' },
+            { key: 'password-generator', name: 'Password Generator', cat: 'Utility Tools' },
+            { key: 'qr-generator', name: 'QR Generator', cat: 'Utility Tools' },
+            { key: 'barcode-generator', name: 'Barcode Generator', cat: 'Utility Tools' },
+            { key: 'word-counter', name: 'Word Counter', cat: 'Utility Tools' },
+            { key: 'color-picker', name: 'Color Picker', cat: 'Utility Tools' },
+            { key: 'case-converter', name: 'Case Converter', cat: 'Text Tools' },
+            { key: 'text-diff', name: 'Text Diff', cat: 'Text Tools' },
+            { key: 'text-to-speech', name: 'Text to Speech', cat: 'Text Tools' }
+        ];
+
+        tools.sort((a, b) => (toolViews[b.key] || 0) - (toolViews[a.key] || 0));
+
+        tbody.innerHTML = tools.map(t => `
+            <tr>
+                <td><strong>${t.name}</strong></td>
+                <td>${t.cat}</td>
+                <td>${this.formatNumber(toolViews[t.key] || 0)} uses</td>
+                <td><span class="badge badge-success">Active</span></td>
+            </tr>
+        `).join('');
     },
 
     /**
@@ -143,19 +281,81 @@ const Dashboard = {
     },
 
     /**
-     * Create traffic overview chart
+     * Get last N days of daily view data from localStorage
+     */
+    getDailyViewsData(days) {
+        let s = {};
+        try { s = JSON.parse(localStorage.getItem('tb_stats')) || {}; } catch {}
+        const dailyViews = s.dailyViews || {};
+        const labels = [];
+        const data = [];
+        for (let i = days - 1; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            const key = d.toISOString().slice(0, 10);
+            labels.push(d.toLocaleDateString('en', { weekday: 'short', month: 'short', day: 'numeric' }).split(',')[0] || key);
+            data.push(dailyViews[key] || 0);
+        }
+        return { labels, data };
+    },
+
+    /**
+     * Get top N tools by usage
+     */
+    getTopToolsData(n) {
+        let s = {};
+        try { s = JSON.parse(localStorage.getItem('tb_stats')) || {}; } catch {}
+        const toolViews = s.toolViews || {};
+        const toolNames = {
+            'pdf-to-word': 'PDF to Word',
+            'tamil-typing': 'Tamil Typing',
+            'password-generator': 'Password Gen',
+            'qr-generator': 'QR Code',
+            'pdf-merger': 'PDF Merger',
+            'image-compressor': 'Img Compress',
+            'image-resizer': 'Img Resizer',
+            'word-counter': 'Word Counter',
+            'pdf-splitter': 'PDF Splitter',
+            'tamil-transliteration': 'Transliterate',
+            'color-picker': 'Color Picker',
+            'case-converter': 'Case Convert',
+            'text-diff': 'Text Diff',
+            'barcode-generator': 'Barcode Gen',
+            'tamil-unicode': 'Tamil Unicode',
+            'tamil-calendar': 'Tamil Cal',
+            'tamil-numerals': 'Tamil Nums',
+            'tamil-word-counter': 'Tamil Words',
+            'pdf-compressor': 'PDF Compress',
+            'pdf-to-images': 'PDF to Img',
+            'image-cropper': 'Img Cropper',
+            'image-converter': 'Img Convert',
+            'images-to-pdf': 'Imgs to PDF',
+            'text-to-speech': 'Text Speech'
+        };
+        const sorted = Object.entries(toolViews)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, n);
+        return {
+            labels: sorted.map(([k]) => toolNames[k] || k),
+            data: sorted.map(([, v]) => v)
+        };
+    },
+
+    /**
+     * Create traffic overview chart (last 7 days — real data)
      */
     createTrafficChart() {
         const ctx = document.getElementById('trafficChart');
         if (!ctx) return;
 
+        const { labels, data } = this.getDailyViewsData(7);
         this.charts.traffic = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                labels,
                 datasets: [{
-                    label: 'Visitors',
-                    data: [120, 190, 150, 220, 180, 270, 320],
+                    label: 'Page Views',
+                    data,
                     borderColor: '#FF6B6B',
                     backgroundColor: 'rgba(255, 107, 107, 0.1)',
                     tension: 0.4,
@@ -165,83 +365,76 @@ const Dashboard = {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
             }
         });
     },
 
     /**
-     * Create tools usage chart
+     * Create tools usage chart (real top-5 tools)
      */
     createToolsChart() {
         const ctx = document.getElementById('toolsChart');
         if (!ctx) return;
 
+        const { labels, data } = this.getTopToolsData(5);
+        const colors = [
+            'rgba(255, 107, 107, 0.8)',
+            'rgba(255, 142, 83, 0.8)',
+            'rgba(81, 207, 102, 0.8)',
+            'rgba(77, 171, 247, 0.8)',
+            'rgba(255, 193, 7, 0.8)'
+        ];
         this.charts.tools = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['PDF to Word', 'Tamil Typing', 'Password Gen', 'QR Code', 'PDF Merger'],
+                labels: labels.length ? labels : ['No data yet'],
                 datasets: [{
                     label: 'Uses',
-                    data: [1245, 2345, 1123, 678, 890],
-                    backgroundColor: [
-                        'rgba(255, 107, 107, 0.8)',
-                        'rgba(255, 142, 83, 0.8)',
-                        'rgba(81, 207, 102, 0.8)',
-                        'rgba(77, 171, 247, 0.8)',
-                        'rgba(255, 193, 7, 0.8)'
-                    ]
+                    data: data.length ? data : [0],
+                    backgroundColor: colors
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
             }
         });
     },
 
     /**
-     * Create visitors analytics chart
+     * Create visitors analytics chart (last 4 weeks — real data)
      */
     createVisitorsChart() {
         const ctx = document.getElementById('visitorsChart');
         if (!ctx) return;
 
+        let s = {};
+        try { s = JSON.parse(localStorage.getItem('tb_stats')) || {}; } catch {}
+        const dailyViews = s.dailyViews || {};
+
+        const weekLabels = ['4 wks ago', '3 wks ago', '2 wks ago', 'This week'];
+        const pageViews = [0, 0, 0, 0];
+        Object.entries(dailyViews).forEach(([dateStr, count]) => {
+            const daysAgo = Math.floor((Date.now() - new Date(dateStr).getTime()) / 86400000);
+            if (daysAgo < 7) pageViews[3] += count;
+            else if (daysAgo < 14) pageViews[2] += count;
+            else if (daysAgo < 21) pageViews[1] += count;
+            else if (daysAgo < 28) pageViews[0] += count;
+        });
+
         this.charts.visitors = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                labels: weekLabels,
                 datasets: [{
-                    label: 'Unique Visitors',
-                    data: [850, 1100, 980, 1340],
+                    label: 'Page Views',
+                    data: pageViews,
                     borderColor: '#FF6B6B',
                     backgroundColor: 'rgba(255, 107, 107, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                }, {
-                    label: 'Page Views',
-                    data: [1200, 1600, 1400, 1900],
-                    borderColor: '#4DABF7',
-                    backgroundColor: 'rgba(77, 171, 247, 0.1)',
                     tension: 0.4,
                     fill: true
                 }]
@@ -249,28 +442,29 @@ const Dashboard = {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
+                plugins: { legend: { position: 'bottom' } }
             }
         });
     },
 
     /**
-     * Create traffic sources chart
+     * Create traffic sources chart (real referrer data from tracker)
      */
     createSourcesChart() {
         const ctx = document.getElementById('sourcesChart');
         if (!ctx) return;
 
+        let s = {};
+        try { s = JSON.parse(localStorage.getItem('tb_stats')) || {}; } catch {}
+        const rv = s.referrerViews || {};
+        const data = [rv.direct || 0, rv.search || 0, rv.social || 0, rv.referral || 0];
+
         this.charts.sources = new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: ['Direct', 'Search', 'Social Media', 'Referral'],
+                labels: ['Direct', 'Search', 'Social', 'Referral'],
                 datasets: [{
-                    data: [35, 40, 15, 10],
+                    data,
                     backgroundColor: [
                         'rgba(255, 107, 107, 0.8)',
                         'rgba(81, 207, 102, 0.8)',
@@ -282,11 +476,7 @@ const Dashboard = {
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
-                    }
-                }
+                plugins: { legend: { position: 'bottom' } }
             }
         });
     },
@@ -386,7 +576,7 @@ const Dashboard = {
         return data ? JSON.parse(data) : {
             enabled: false,
             network: 'adsense',
-            publisherId: '',
+            publisherId: 'ca-pub-6827825619861169',
             slots: {}
         };
     },
@@ -415,6 +605,42 @@ const Dashboard = {
         const saveSettingsBtn = document.getElementById('saveSettingsBtn');
         if (saveSettingsBtn) {
             saveSettingsBtn.addEventListener('click', () => this.saveAllSettings());
+        }
+
+        // Password update button
+        const updatePasswordBtn = document.getElementById('updatePasswordBtn');
+        if (updatePasswordBtn) {
+            updatePasswordBtn.addEventListener('click', async () => {
+                const current = document.getElementById('currentPassword').value;
+                const newPass = document.getElementById('newPassword').value;
+                const confirm = document.getElementById('confirmPassword').value;
+                const msg = document.getElementById('passwordMsg');
+
+                if (!current || !newPass || !confirm) {
+                    msg.style.display = 'block';
+                    msg.style.color = '#e74c3c';
+                    msg.textContent = 'Please fill in all password fields.';
+                    return;
+                }
+                if (newPass !== confirm) {
+                    msg.style.display = 'block';
+                    msg.style.color = '#e74c3c';
+                    msg.textContent = 'New passwords do not match.';
+                    return;
+                }
+                const result = await AdminAuth.updatePassword(current, newPass);
+                msg.style.display = 'block';
+                if (result.success) {
+                    msg.style.color = '#27ae60';
+                    msg.textContent = 'Password updated successfully!';
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmPassword').value = '';
+                } else {
+                    msg.style.color = '#e74c3c';
+                    msg.textContent = result.error;
+                }
+            });
         }
 
         // Load current settings
@@ -492,20 +718,46 @@ const Dashboard = {
     /**
      * Load activity logs
      */
-    loadActivityLogs() {
-        const logs = AdminAuth.getActivityLogs();
+    loadActivityLogs(typeFilter = 'all', dateFrom = '', dateTo = '') {
+        let logs = AdminAuth.getActivityLogs();
         const tbody = document.getElementById('logsTableBody');
+        if (!tbody) return;
 
-        if (tbody && logs.length > 0) {
-            tbody.innerHTML = logs.slice(0, 20).map(log => `
-                <tr>
-                    <td>${new Date(log.timestamp).toLocaleString()}</td>
-                    <td><span class="badge badge-${this.getLogBadgeType(log.type)}">${log.type}</span></td>
-                    <td>${log.description}</td>
-                    <td>${log.ip}</td>
-                    <td><span class="badge badge-${log.status === 'success' ? 'success' : 'danger'}">${log.status}</span></td>
-                </tr>
-            `).join('');
+        if (typeFilter !== 'all') {
+            logs = logs.filter(l => l.type.includes(typeFilter));
+        }
+        if (dateFrom) {
+            logs = logs.filter(l => new Date(l.timestamp) >= new Date(dateFrom));
+        }
+        if (dateTo) {
+            logs = logs.filter(l => new Date(l.timestamp) <= new Date(dateTo + 'T23:59:59'));
+        }
+
+        if (logs.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#999;">No activity logs found.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = logs.slice(0, 50).map(log => `
+            <tr>
+                <td>${new Date(log.timestamp).toLocaleString()}</td>
+                <td><span class="badge badge-${this.getLogBadgeType(log.type)}">${log.type}</span></td>
+                <td>${log.description}</td>
+                <td>${log.ip}</td>
+                <td><span class="badge badge-${log.status === 'success' ? 'success' : 'danger'}">${log.status}</span></td>
+            </tr>
+        `).join('');
+
+        // Wire filter button (idempotent)
+        const filterBtn = document.getElementById('filterLogsBtn');
+        if (filterBtn && !filterBtn._wired) {
+            filterBtn._wired = true;
+            filterBtn.addEventListener('click', () => {
+                const type = document.getElementById('logType').value;
+                const from = document.getElementById('logDateFrom').value;
+                const to = document.getElementById('logDateTo').value;
+                this.loadActivityLogs(type, from, to);
+            });
         }
     },
 
@@ -519,12 +771,23 @@ const Dashboard = {
     },
 
     /**
-     * Setup refresh button
+     * Redraw all charts with fresh localStorage data
+     */
+    refreshCharts() {
+        Object.values(this.charts).forEach(c => { try { c.destroy(); } catch {} });
+        this.charts = {};
+        this.initializeCharts();
+    },
+
+    /**
+     * Setup refresh button + auto-refresh every 60 seconds
      */
     setupRefresh() {
         document.getElementById('refreshBtn').addEventListener('click', () => {
             this.refreshData();
         });
+        // Auto-refresh stats and charts every 60 seconds
+        setInterval(() => this.refreshData(), 60000);
     },
 
     /**
@@ -532,6 +795,9 @@ const Dashboard = {
      */
     refreshData() {
         this.loadSectionData(this.currentSection);
+        if (this.currentSection === 'overview' || this.currentSection === 'analytics') {
+            this.refreshCharts();
+        }
         this.showNotification('Data refreshed!', 'info');
     },
 
@@ -549,20 +815,48 @@ const Dashboard = {
             case 'logs':
                 this.loadActivityLogs();
                 break;
+            case 'enquiries':
+                loadEnquiries();
+                break;
+            case 'analytics':
+                this.refreshCharts();
+                this.loadAnalytics();
+                break;
+            case 'tools':
+                this.loadToolsTable();
+                break;
         }
     },
 
     /**
-     * Get analytics data (simulated)
+     * Get analytics data from localStorage tracking
      */
     getAnalyticsData() {
-        // In production, this would fetch from Google Analytics API
+        let s = {};
+        try { s = JSON.parse(localStorage.getItem('tb_stats')) || {}; } catch {}
+
+        const today = new Date().toISOString().slice(0, 10);
+        const dailyViews = s.dailyViews || {};
+
+        // Today's views
+        const todayVisitors = dailyViews[today] || 0;
+
+        // This month's views
+        const monthPrefix = today.slice(0, 7); // 'YYYY-MM'
+        const monthVisitors = Object.keys(dailyViews)
+            .filter(d => d.startsWith(monthPrefix))
+            .reduce((sum, d) => sum + dailyViews[d], 0);
+
+        // Total tool clicks (sum of all tool-specific views)
+        const toolViews = s.toolViews || {};
+        const totalClicks = Object.values(toolViews).reduce((a, b) => a + b, 0);
+
         return {
-            totalVisitors: 12450,
-            todayVisitors: 320,
-            monthVisitors: 8930,
-            adRevenue: 124.80,
-            totalClicks: 1567
+            totalVisitors: s.totalViews || 0,
+            todayVisitors,
+            monthVisitors,
+            adRevenue: 0,
+            totalClicks
         };
     },
 
