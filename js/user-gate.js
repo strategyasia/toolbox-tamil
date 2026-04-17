@@ -170,11 +170,7 @@ const UserGate = {
                     background:linear-gradient(135deg,#FF6B6B,#FF8E53);
                     padding:1rem 1.25rem .85rem; text-align:center; color:#fff;
                 }
-                #gate-card .gate-top .gate-logo {
-                    width:36px; height:36px; background:rgba(255,255,255,.22);
-                    border-radius:10px; display:inline-flex; align-items:center;
-                    justify-content:center; margin-bottom:.45rem; font-size:1.1rem;
-                }
+                #gate-card .gate-top .gate-logo { display:none; }
                 #gate-card .gate-top h2 { font-size:1rem; font-weight:800; margin:0 0 .2rem; letter-spacing:-.2px; }
                 #gate-card .gate-top p  { font-size:.78rem; opacity:.88; margin:0; line-height:1.4; }
                 #gate-card .gate-tool-badge {
