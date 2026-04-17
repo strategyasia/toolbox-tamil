@@ -127,11 +127,10 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 📧 Contact
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/toolbox-tamil/issues)
-- **Email**: your.email@example.com
+- **Email**: vinsonde@me.com
 
 ---
 
 **வாழ்க தமிழ்! 🇮🇳**
 
-Made with ❤️ for Tamil people worldwide
+Made with ❤️ for Tamil people worldwide by Joseph vinothkumar

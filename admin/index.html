@@ -54,6 +54,10 @@
                 <span class="icon">⚙️</span>
                 <span>Settings</span>
             </a>
+            <a href="#" class="nav-item" data-section="leads">
+                <span class="icon">👥</span>
+                <span>Leads</span>
+            </a>
             <a href="#" class="nav-item" data-section="logs">
                 <span class="icon">📝</span>
                 <span>Activity Logs</span>
@@ -637,6 +641,110 @@
                         </div>
                     </div>
                 </div>
+            </section>
+
+            <!-- Leads Section -->
+            <section id="section-leads" class="content-section">
+                <div class="section-header">
+                    <h2>User Leads</h2>
+                    <button class="btn btn-primary" id="exportLeadsBtn">⬇ Export CSV</button>
+                </div>
+
+                <!-- Lead Stats -->
+                <div class="stats-grid" style="margin-bottom:1.5rem;">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-info">
+                            <h3>Total Leads</h3>
+                            <p class="stat-number" id="leadsTotal">0</p>
+                            <span class="stat-change positive" id="leadsTotalSub">Registered users</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📅</div>
+                        <div class="stat-info">
+                            <h3>Today</h3>
+                            <p class="stat-number" id="leadsToday">0</p>
+                            <span class="stat-change positive">New registrations today</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📈</div>
+                        <div class="stat-info">
+                            <h3>This Week</h3>
+                            <p class="stat-number" id="leadsWeek">0</p>
+                            <span class="stat-change positive">Last 7 days</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🛠️</div>
+                        <div class="stat-info">
+                            <h3>Tool Accesses</h3>
+                            <p class="stat-number" id="leadsAccesses">0</p>
+                            <span class="stat-change positive">Total tool opens</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="logs-filters" style="margin-bottom:1.25rem;">
+                    <input type="text" id="leadsSearch" placeholder="🔍  Search name, email or phone…" style="flex:1;min-width:180px;">
+                    <select id="leadsToolFilter">
+                        <option value="">All Tools</option>
+                        <option value="pdf-to-word">PDF to Word</option>
+                        <option value="pdf-merger">PDF Merger</option>
+                        <option value="pdf-splitter">PDF Splitter</option>
+                        <option value="pdf-compressor">PDF Compressor</option>
+                        <option value="pdf-to-images">PDF to Images</option>
+                        <option value="images-to-pdf">Images to PDF</option>
+                        <option value="image-compressor">Image Compressor</option>
+                        <option value="image-resizer">Image Resizer</option>
+                        <option value="image-converter">Image Converter</option>
+                        <option value="image-cropper">Image Cropper</option>
+                        <option value="tamil-typing">Tamil Typing</option>
+                        <option value="tamil-unicode">Tamil Unicode</option>
+                        <option value="tamil-transliteration">Tamil Transliteration</option>
+                        <option value="tamil-word-counter">Tamil Word Counter</option>
+                        <option value="tamil-calendar">Tamil Calendar</option>
+                        <option value="tamil-numerals">Tamil Numerals</option>
+                        <option value="text-to-speech">Text to Speech</option>
+                        <option value="word-counter">Word Counter</option>
+                        <option value="case-converter">Case Converter</option>
+                        <option value="text-diff">Text Diff</option>
+                        <option value="qr-generator">QR Generator</option>
+                        <option value="barcode-generator">Barcode Generator</option>
+                        <option value="color-picker">Color Picker</option>
+                        <option value="password-generator">Password Generator</option>
+                    </select>
+                    <input type="date" id="leadsDateFrom" title="From date">
+                    <input type="date" id="leadsDateTo" title="To date">
+                    <button class="btn btn-primary" id="leadsFilterBtn">Filter</button>
+                    <button class="btn btn-secondary" id="leadsClearBtn">Clear</button>
+                </div>
+
+                <!-- Table -->
+                <div class="logs-table-wrapper">
+                    <table class="data-table" id="leadsTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Tool Used</th>
+                                <th>Date &amp; Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leadsTableBody">
+                            <tr>
+                                <td colspan="6" style="text-align:center;color:#aaa;padding:2rem;">
+                                    No leads yet. They'll appear here once users register.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div id="leadsPagination" style="display:flex;gap:.5rem;justify-content:flex-end;margin-top:1rem;flex-wrap:wrap;"></div>
             </section>
 
             <!-- Activity Logs Section -->

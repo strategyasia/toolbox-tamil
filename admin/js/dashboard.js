@@ -97,6 +97,10 @@ const Dashboard = {
                 title: 'Tools Management',
                 subtitle: 'Manage and monitor your online tools.'
             },
+            leads: {
+                title: 'User Leads',
+                subtitle: 'View and manage registered users who accessed your tools.'
+            },
             settings: {
                 title: 'Settings',
                 subtitle: 'Configure your website and admin preferences.'
@@ -812,6 +816,9 @@ const Dashboard = {
             case 'ads':
                 this.loadAdSettings();
                 break;
+            case 'leads':
+                this.loadLeads();
+                break;
             case 'logs':
                 this.loadActivityLogs();
                 break;
@@ -1111,9 +1118,197 @@ function filterEnquiries(filter) {
     `).join('');
 }
 
+/* ══════════════════════════════════════════
+   LEADS MANAGEMENT
+══════════════════════════════════════════ */
+const LeadsManager = {
+    LEADS_KEY: 'toolbox_leads',
+    PAGE_SIZE: 20,
+    currentPage: 1,
+    filteredLeads: [],
+
+    getLeads() {
+        const d = localStorage.getItem(this.LEADS_KEY);
+        return d ? JSON.parse(d) : [];
+    },
+
+    toolLabel(id) {
+        const map = {
+            'pdf-to-word': 'PDF to Word', 'pdf-merger': 'PDF Merger',
+            'pdf-splitter': 'PDF Splitter', 'pdf-compressor': 'PDF Compressor',
+            'pdf-to-images': 'PDF to Images', 'images-to-pdf': 'Images to PDF',
+            'image-compressor': 'Image Compressor', 'image-resizer': 'Image Resizer',
+            'image-converter': 'Image Converter', 'image-cropper': 'Image Cropper',
+            'tamil-typing': 'Tamil Typing', 'tamil-unicode': 'Tamil Unicode',
+            'tamil-transliteration': 'Tamil Transliteration', 'tamil-word-counter': 'Tamil Word Counter',
+            'tamil-calendar': 'Tamil Calendar', 'tamil-numerals': 'Tamil Numerals',
+            'text-to-speech': 'Text to Speech', 'word-counter': 'Word Counter',
+            'case-converter': 'Case Converter', 'text-diff': 'Text Diff',
+            'qr-generator': 'QR Generator', 'barcode-generator': 'Barcode Generator',
+            'color-picker': 'Color Picker', 'password-generator': 'Password Generator'
+        };
+        return map[id] || id;
+    },
+
+    init() {
+        this.loadLeads();
+        this.bindControls();
+    },
+
+    loadLeads(leads) {
+        const all = leads || this.getLeads();
+        this.filteredLeads = all;
+        this.currentPage = 1;
+
+        /* ── stats ── */
+        const now   = new Date();
+        const today = now.toDateString();
+        const week  = new Date(now - 7 * 86400000);
+
+        /* unique users */
+        const uniqueEmails = new Set(all.map(l => l.email));
+        document.getElementById('leadsTotal').textContent     = uniqueEmails.size;
+        document.getElementById('leadsAccesses').textContent  = Dashboard.formatNumber(all.length);
+
+        const todayCount = all.filter(l => new Date(l.date).toDateString() === today).length;
+        const weekCount  = all.filter(l => new Date(l.date) >= week).length;
+        document.getElementById('leadsToday').textContent = todayCount;
+        document.getElementById('leadsWeek').textContent  = weekCount;
+
+        this.renderTable();
+        this.renderPagination();
+    },
+
+    renderTable() {
+        const tbody = document.getElementById('leadsTableBody');
+        const start = (this.currentPage - 1) * this.PAGE_SIZE;
+        const page  = this.filteredLeads.slice(start, start + this.PAGE_SIZE);
+
+        if (page.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#aaa;padding:2rem;">
+                No leads found.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = page.map((lead, i) => {
+            const dt   = new Date(lead.date);
+            const dateStr = dt.toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+            const timeStr = dt.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' });
+            const rowNum  = start + i + 1;
+            return `
+            <tr>
+                <td style="color:#aaa;font-size:.8rem;">${rowNum}</td>
+                <td><strong>${this.esc(lead.name)}</strong></td>
+                <td>${this.esc(lead.email)}</td>
+                <td>${this.esc(lead.phone)}</td>
+                <td><span class="badge badge-info">${this.toolLabel(lead.toolId)}</span></td>
+                <td style="font-size:.82rem;color:#636e72;">${dateStr} &nbsp;${timeStr}</td>
+            </tr>`;
+        }).join('');
+    },
+
+    renderPagination() {
+        const container = document.getElementById('leadsPagination');
+        const total = Math.ceil(this.filteredLeads.length / this.PAGE_SIZE);
+        if (total <= 1) { container.innerHTML = ''; return; }
+
+        let html = '';
+        for (let p = 1; p <= total; p++) {
+            const active = p === this.currentPage ? 'btn-primary' : 'btn-secondary';
+            html += `<button class="btn ${active}" data-page="${p}">${p}</button>`;
+        }
+        container.innerHTML = html;
+
+        container.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.currentPage = parseInt(btn.dataset.page);
+                this.renderTable();
+                this.renderPagination();
+            });
+        });
+    },
+
+    applyFilters() {
+        const search   = document.getElementById('leadsSearch').value.toLowerCase();
+        const tool     = document.getElementById('leadsToolFilter').value;
+        const dateFrom = document.getElementById('leadsDateFrom').value;
+        const dateTo   = document.getElementById('leadsDateTo').value;
+        const all      = this.getLeads();
+
+        const filtered = all.filter(l => {
+            const matchSearch = !search ||
+                l.name.toLowerCase().includes(search) ||
+                l.email.toLowerCase().includes(search) ||
+                l.phone.toLowerCase().includes(search);
+            const matchTool = !tool || l.toolId === tool;
+            const d = new Date(l.date);
+            const matchFrom = !dateFrom || d >= new Date(dateFrom);
+            const matchTo   = !dateTo   || d <= new Date(dateTo + 'T23:59:59');
+            return matchSearch && matchTool && matchFrom && matchTo;
+        });
+
+        this.filteredLeads = filtered;
+        this.currentPage = 1;
+        this.renderTable();
+        this.renderPagination();
+    },
+
+    exportCSV() {
+        const leads = this.filteredLeads;
+        if (!leads.length) { alert('No leads to export.'); return; }
+
+        const headers = ['#', 'Name', 'Email', 'Phone', 'Tool', 'Date', 'Time'];
+        const rows = leads.map((l, i) => {
+            const dt = new Date(l.date);
+            return [
+                i + 1,
+                `"${l.name.replace(/"/g, '""')}"`,
+                `"${l.email.replace(/"/g, '""')}"`,
+                `"${l.phone.replace(/"/g, '""')}"`,
+                `"${this.toolLabel(l.toolId)}"`,
+                dt.toLocaleDateString('en-IN'),
+                dt.toLocaleTimeString('en-IN')
+            ].join(',');
+        });
+
+        const csv  = [headers.join(','), ...rows].join('\n');
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        a.href     = url;
+        a.download = `toolbox-tamil-leads-${new Date().toISOString().slice(0,10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+    },
+
+    bindControls() {
+        document.getElementById('exportLeadsBtn')?.addEventListener('click', () => this.exportCSV());
+        document.getElementById('leadsFilterBtn')?.addEventListener('click', () => this.applyFilters());
+        document.getElementById('leadsClearBtn')?.addEventListener('click', () => {
+            document.getElementById('leadsSearch').value = '';
+            document.getElementById('leadsToolFilter').value = '';
+            document.getElementById('leadsDateFrom').value = '';
+            document.getElementById('leadsDateTo').value = '';
+            this.loadLeads();
+        });
+        document.getElementById('leadsSearch')?.addEventListener('input', () => this.applyFilters());
+    },
+
+    esc(str) {
+        return String(str)
+            .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+            .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+};
+
+// Wire leads into dashboard navigation
+const _origLoadSectionData = Dashboard.loadSectionData.bind(Dashboard);
+Dashboard.loadLeads = function() { LeadsManager.loadLeads(); };
+
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', () => {
     Dashboard.init();
+    LeadsManager.bindControls();
 
     // Load enquiries when enquiries section is shown
     const enquiriesNav = document.querySelector('[data-section="enquiries"]');
