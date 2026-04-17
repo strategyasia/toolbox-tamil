@@ -275,48 +275,68 @@ const Dashboard = {
     },
 
     /**
-     * Load Google GeoChart with visitor country data
+     * Load Google GeoChart with visitor country data.
+     * If no geo data exists yet, fetches current location first.
      */
     loadVisitorMap() {
         if (typeof google === 'undefined' || !google.charts) return;
 
+        const renderMap = () => {
+            let s = {};
+            try { s = JSON.parse(localStorage.getItem('tb_stats')) || {}; } catch {}
+            const countryViews = s.countryViews || {};
+            const countryNames = s.countryNames || {};
+            const entries = Object.keys(countryViews);
+
+            const mapDiv = document.getElementById('visitorMapChart');
+            const note   = document.getElementById('visitorMapNote');
+            if (!mapDiv) return;
+
+            mapDiv.style.height = '420px';
+            if (note) note.style.display = 'none';
+
+            google.charts.load('current', { packages: ['geochart'] });
+            google.charts.setOnLoadCallback(() => {
+                const rows = entries.map(code => [
+                    countryNames[code] || code,
+                    countryViews[code]
+                ]);
+                // Always render map; empty rows = world map with no highlights
+                const data = google.visualization.arrayToDataTable([
+                    ['Country', 'Visitors'],
+                    ...rows
+                ]);
+                const chart = new google.visualization.GeoChart(mapDiv);
+                chart.draw(data, {
+                    colorAxis: { colors: ['#FFD5C8', '#FF6B6B'] },
+                    backgroundColor: '#f8f9fa',
+                    datalessRegionColor: '#e9ecef',
+                    defaultColor: '#e9ecef',
+                    legend: { textStyle: { color: '#555', fontSize: 12 } }
+                });
+            });
+        };
+
+        // If no geo data yet, fetch current location then render
         let s = {};
         try { s = JSON.parse(localStorage.getItem('tb_stats')) || {}; } catch {}
-        const countryViews = s.countryViews || {};
-        const countryNames = s.countryNames || {};
-        const entries = Object.keys(countryViews);
-
-        const mapDiv = document.getElementById('visitorMapChart');
-        const note   = document.getElementById('visitorMapNote');
-        if (!mapDiv) return;
-
-        if (!entries.length) {
-            mapDiv.style.height = '0';
-            if (note) note.style.display = 'block';
-            return;
+        if (!s.countryViews || !Object.keys(s.countryViews).length) {
+            fetch('https://ipapi.co/json/')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.country_code) {
+                        s.countryViews = s.countryViews || {};
+                        s.countryNames = s.countryNames || {};
+                        s.countryViews[data.country_code] = (s.countryViews[data.country_code] || 0) + 1;
+                        s.countryNames[data.country_code] = data.country_name;
+                        try { localStorage.setItem('tb_stats', JSON.stringify(s)); } catch {}
+                    }
+                })
+                .catch(() => {})
+                .finally(() => renderMap());
+        } else {
+            renderMap();
         }
-        mapDiv.style.height = '420px';
-        if (note) note.style.display = 'none';
-
-        google.charts.load('current', { packages: ['geochart'] });
-        google.charts.setOnLoadCallback(() => {
-            const rows = entries.map(code => [
-                countryNames[code] || code,
-                countryViews[code]
-            ]);
-            const data = google.visualization.arrayToDataTable([
-                ['Country', 'Visitors'],
-                ...rows
-            ]);
-            const chart = new google.visualization.GeoChart(mapDiv);
-            chart.draw(data, {
-                colorAxis: { colors: ['#FFD5C8', '#FF6B6B'] },
-                backgroundColor: '#f8f9fa',
-                datalessRegionColor: '#e9ecef',
-                defaultColor: '#e9ecef',
-                legend: { textStyle: { color: '#555', fontSize: 12 } }
-            });
-        });
     },
 
     /**
