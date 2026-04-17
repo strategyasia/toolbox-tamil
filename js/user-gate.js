@@ -168,21 +168,21 @@ const UserGate = {
                 }
                 #gate-card .gate-top {
                     background:linear-gradient(135deg,#FF6B6B,#FF8E53);
-                    padding:2rem 2rem 1.5rem; text-align:center; color:#fff;
+                    padding:1rem 1.25rem .85rem; text-align:center; color:#fff;
                 }
                 #gate-card .gate-top .gate-logo {
-                    width:52px; height:52px; background:rgba(255,255,255,.22);
-                    border-radius:14px; display:inline-flex; align-items:center;
-                    justify-content:center; margin-bottom:.85rem; font-size:1.6rem;
+                    width:36px; height:36px; background:rgba(255,255,255,.22);
+                    border-radius:10px; display:inline-flex; align-items:center;
+                    justify-content:center; margin-bottom:.45rem; font-size:1.1rem;
                 }
-                #gate-card .gate-top h2 { font-size:1.35rem; font-weight:800; margin:0 0 .35rem; letter-spacing:-.3px; }
-                #gate-card .gate-top p  { font-size:.85rem; opacity:.88; margin:0; line-height:1.5; }
+                #gate-card .gate-top h2 { font-size:1rem; font-weight:800; margin:0 0 .2rem; letter-spacing:-.2px; }
+                #gate-card .gate-top p  { font-size:.78rem; opacity:.88; margin:0; line-height:1.4; }
                 #gate-card .gate-tool-badge {
-                    display:inline-flex; align-items:center; gap:.4rem;
+                    display:inline-flex; align-items:center; gap:.3rem;
                     background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.3);
-                    border-radius:999px; padding:.25rem .8rem;
-                    font-size:.72rem; font-weight:700; letter-spacing:.4px;
-                    text-transform:uppercase; margin-top:.75rem;
+                    border-radius:999px; padding:.2rem .65rem;
+                    font-size:.68rem; font-weight:700; letter-spacing:.3px;
+                    text-transform:uppercase; margin-top:.5rem;
                 }
                 #gate-card .gate-body { padding:1.5rem 2rem 2rem; }
                 #gate-card .gate-tabs {
