@@ -275,6 +275,51 @@ const Dashboard = {
     },
 
     /**
+     * Load Google GeoChart with visitor country data
+     */
+    loadVisitorMap() {
+        if (typeof google === 'undefined' || !google.charts) return;
+
+        let s = {};
+        try { s = JSON.parse(localStorage.getItem('tb_stats')) || {}; } catch {}
+        const countryViews = s.countryViews || {};
+        const countryNames = s.countryNames || {};
+        const entries = Object.keys(countryViews);
+
+        const mapDiv = document.getElementById('visitorMapChart');
+        const note   = document.getElementById('visitorMapNote');
+        if (!mapDiv) return;
+
+        if (!entries.length) {
+            mapDiv.style.height = '0';
+            if (note) note.style.display = 'block';
+            return;
+        }
+        mapDiv.style.height = '420px';
+        if (note) note.style.display = 'none';
+
+        google.charts.load('current', { packages: ['geochart'] });
+        google.charts.setOnLoadCallback(() => {
+            const rows = entries.map(code => [
+                countryNames[code] || code,
+                countryViews[code]
+            ]);
+            const data = google.visualization.arrayToDataTable([
+                ['Country', 'Visitors'],
+                ...rows
+            ]);
+            const chart = new google.visualization.GeoChart(mapDiv);
+            chart.draw(data, {
+                colorAxis: { colors: ['#FFD5C8', '#FF6B6B'] },
+                backgroundColor: '#f8f9fa',
+                datalessRegionColor: '#e9ecef',
+                defaultColor: '#e9ecef',
+                legend: { textStyle: { color: '#555', fontSize: 12 } }
+            });
+        });
+    },
+
+    /**
      * Initialize charts
      */
     initializeCharts() {
@@ -282,6 +327,7 @@ const Dashboard = {
         this.createToolsChart();
         this.createVisitorsChart();
         this.createSourcesChart();
+        this.loadVisitorMap();
     },
 
     /**

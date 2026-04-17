@@ -71,9 +71,27 @@
         saveStats(s);
     }
 
+    function fetchCountry() {
+        if (sessionStorage.getItem('tb_geo_done')) return;
+        sessionStorage.setItem('tb_geo_done', '1');
+        fetch('https://ipapi.co/json/')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                if (!data.country_code) return;
+                var s = getStats();
+                if (!s.countryViews) s.countryViews = {};
+                if (!s.countryNames) s.countryNames = {};
+                s.countryViews[data.country_code] = (s.countryViews[data.country_code] || 0) + 1;
+                s.countryNames[data.country_code] = data.country_name;
+                saveStats(s);
+            })
+            .catch(function() {});
+    }
+
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', track);
+        document.addEventListener('DOMContentLoaded', function() { track(); fetchCountry(); });
     } else {
         track();
+        fetchCountry();
     }
 })();
